@@ -19,9 +19,13 @@
   function renderLeaderboard(target){const scores=readScores().sort((a,b)=>b.score-a.score).slice(0,10);const el=$(target);if(!scores.length){el.innerHTML='<div class="empty-leaderboard">Noch keine Ergebnisse gespeichert. Starte das erste Spiel!</div>';return;}el.innerHTML=scores.map((s,i)=>'<div class="leader-row"><div class="leader-rank">#'+(i+1)+'</div><div><div class="leader-name">'+escapeHtml(s.name)+'</div><div class="leader-date">'+new Date(s.date).toLocaleDateString("de-DE")+'</div></div><div class="leader-score">'+s.score.toLocaleString("de-DE")+' P</div></div>').join("");}
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
   function saveScore(){const name=$("player-name").value.trim().slice(0,18)||"Spieler";const scores=readScores();scores.push({name,score:state.score,date:new Date().toISOString()});scores.sort((a,b)=>b.score-a.score);localStorage.setItem("mc-color-scores",JSON.stringify(scores.slice(0,50)));renderLeaderboard("full-leaderboard");renderLeaderboard("home-leaderboard");showScreen("leaderboard-screen");}
-  $("start-guess").addEventListener("click",startGame);$("back-home").addEventListener("click",()=>showScreen("home-screen"));$("submit-guess").addEventListener("click",submitGuess);$("next-round").addEventListener("click",nextRound);$("save-score").addEventListener("click",saveScore);$("play-again").addEventListener("click",startGame);$("show-leaderboard").addEventListener("click",()=>{renderLeaderboard("full-leaderboard");showScreen("leaderboard-screen");});$("leaderboard-back").addEventListener("click",()=>showScreen("home-screen"));
+  window.startGuessGame = startGame;$("back-home").addEventListener("click",()=>showScreen("home-screen"));$("submit-guess").addEventListener("click",submitGuess);$("next-round").addEventListener("click",nextRound);$("save-score").addEventListener("click",saveScore);$("play-again").addEventListener("click",startGame);$("show-leaderboard").addEventListener("click",()=>{renderLeaderboard("full-leaderboard");showScreen("leaderboard-screen");});$("leaderboard-back").addEventListener("click",()=>showScreen("home-screen"));
   $("color-picker").addEventListener("input",e=>setGuess(e.target.value));["red","green","blue"].forEach((c)=>$(c+"-range").addEventListener("input",()=>setGuess(rgbToHex(["red","green","blue"].map(k=>Number($(k+"-range").value))))));
   $("hex-input").addEventListener("input",e=>{const value=e.target.value.replace(/[^0-9a-f]/gi,"").slice(0,6);e.target.value=value;if(value.length===6)setGuess("#"+value);});
   $("copy-hex").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(state.guess);$("copy-hex").textContent="OK";setTimeout(()=>$("copy-hex").textContent="COPY",900);}catch{$("hex-input").select();}});
-  setGuess("#6B8E23");renderLeaderboard("home-leaderboard");
+  // Expose a direct handler for the start card. This avoids relying only on
+  // a dynamically registered listener, which can fail silently on some embeds.
+  window.startGuessGame = startGame;
+  setGuess("#6B8E23");
+  renderLeaderboard("home-leaderboard");
 })();
