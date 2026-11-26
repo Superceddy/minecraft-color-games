@@ -74,7 +74,14 @@
     return rgbToHex(rgb.map(n=>(n+m)*255));
   }
   function showScreen(id){screens.forEach(s=>$(s).classList.toggle("active",s===id));window.scrollTo({top:0,behavior:"smooth"});}
-  function randomBlock(){let choices=window.MC_BLOCKS.filter(b=>!state.used.includes(b.id));if(!choices.length){state.used=[];choices=window.MC_BLOCKS;}const block=choices[Math.floor(Math.random()*choices.length)];state.used.push(block.id);return block;}
+  const isRenderableBlock = block => !["air","cave_air","void_air","barrier","light","structure_void","moving_piston","piston_head"].includes(block.id.replace("minecraft:",""));
+  function randomBlock(){
+    let choices=window.MC_BLOCKS.filter(block=>isRenderableBlock(block)&&!state.used.includes(block.id));
+    if(!choices.length){state.used=[];choices=window.MC_BLOCKS.filter(isRenderableBlock);}
+    const block=choices[Math.floor(Math.random()*choices.length)];
+    if(block) state.used.push(block.id);
+    return block;
+  }
   function setGuess(hex){
     if(!/^#[0-9a-f]{6}$/i.test(hex))return;
     state.guess=hex.toUpperCase();const [h,s,v]=rgbToHsv(hexToRgb(state.guess));
@@ -97,25 +104,40 @@
     if (startButton) startButton.disabled = false;
     state.round=0;state.score=0;state.rounds=[];state.used=[];$("live-score").textContent="0";nextRound();
   }
-  function nextRound(){
+  async function nextRound(){
     if(state.round>=5){finishGame();return;}
-    state.current=randomBlock();$("round-number").textContent=state.round+1;$("block-name").textContent=state.current.name;$("block-id").textContent=state.current.id;
-    const img=$("block-image"),error=$("texture-error"),submit=$("submit-guess");
-    const urls=textureUrls(state.current.texture);let sourceIndex=0;
+    const submit=$("submit-guess"),img=$("block-image"),error=$("texture-error");
     submit.disabled=true;
+    img.hidden=true;error.hidden=true;
+    let selected=null, measured=null;
+    for(let tries=0;tries<80;tries++){
+      const candidate=randomBlock();
+      if(!candidate) break;
+      measured=await loadBlockColor(candidate);
+      if(measured){selected=candidate;break;}
+    }
+    if(!selected){
+      $("block-name").textContent="Textur nicht verfügbar";
+      $("block-id").textContent="Bitte starte eine neue Runde.";
+      error.hidden=false;error.textContent="Für die übrigen Blöcke konnte keine Textur geladen werden.";
+      submit.disabled=true;
+      showScreen("game-screen");
+      return;
+    }
+    state.current=selected;
+    state.current.color=measured;
+    $("round-number").textContent=state.round+1;
+    $("block-name").textContent=state.current.name;
+    $("block-id").textContent=state.current.id;
+    const urls=textureUrls(state.current.texture);let sourceIndex=0;
     img.crossOrigin="anonymous";
-    img.hidden=false;error.hidden=true;
+    img.hidden=false;
     img.onerror=()=>{
       sourceIndex++;
       if(sourceIndex<urls.length){img.src=urls[sourceIndex];}
       else{img.hidden=true;error.hidden=false;submit.disabled=false;}
     };
-    img.onload=()=>{
-      img.hidden=false;error.hidden=true;
-      const measured=averageTextureColor(img);
-      if(measured) state.current.color=measured;
-      submit.disabled=false;
-    };
+    img.onload=()=>{img.hidden=false;error.hidden=true;submit.disabled=false;};
     if(urls.length){img.src=urls[0];}else{img.hidden=true;error.hidden=false;submit.disabled=false;}
     setGuess("#6B8E23");showScreen("game-screen");
   }
@@ -181,7 +203,7 @@
     state.colorleGuesses = [];
     state.colorleFinished = false;
     state.colorleTarget = null;
-    const pool = [...window.MC_BLOCKS];
+    const pool = window.MC_BLOCKS.filter(isRenderableBlock);
     for (let tries = 0; tries < 30 && pool.length; tries++) {
       const index = Math.floor(Math.random() * pool.length);
       const candidate = pool.splice(index, 1)[0];
