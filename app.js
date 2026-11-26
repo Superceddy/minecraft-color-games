@@ -3,6 +3,10 @@
   const screens = ["home-screen","game-screen","result-screen","finish-screen","leaderboard-screen"];
   const state = {round:0,score:0,rounds:[],current:null,guess:"#6B8E23",used:[]};
   const MAX_DISTANCE = Math.sqrt(3 * 255 * 255);
+  const supabaseClient = window.supabase?.createClient(
+    "https://fjonruqyptpoxtwztgnx.supabase.co",
+    "sb_publishable_ZOD_FFJkzyOOUSrW0w6CTg_DsRmBvHL"
+  );
   const textureUrl = (texture) => `https://mcasset.cloud/1.21.1/assets/minecraft/textures/block/${texture}.png`;
   const hexToRgb = (hex) => { const clean=hex.replace("#",""); return [0,2,4].map(i=>parseInt(clean.slice(i,i+2),16)); };
   const rgbToHex = (rgb) => "#"+rgb.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("").toUpperCase();
@@ -35,26 +39,47 @@
     $("brightness-range").style.setProperty("--track",`linear-gradient(90deg,#000,#${hsvToHex(h,s,100).slice(1)})`);
   }
   function updateFromSliders(){setGuess(hsvToHex(Number($("hue-range").value),Number($("saturation-range").value),Number($("brightness-range").value)));}
-  function makeFallbackTexture(seed){
-    let n=0;for(const c of seed)n=(n*31+c.charCodeAt(0))>>>0;
-    const rand=()=>{n=(n*1664525+1013904223)>>>0;return n/4294967296;};
-    const base=state.current?.color||"#777777",rgb=hexToRgb(base);
-    let rects="";for(let y=0;y<8;y++)for(let x=0;x<8;x++){const k=.72+rand()*.48,c=rgb.map(v=>Math.max(0,Math.min(255,Math.round(v*k))));rects+=`<rect x="${x*16}" y="${y*16}" width="16" height="16" fill="rgb(${c.join(",")})"/>`;}
-    return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">${rects}</svg>`);
-  }
   function startGame(){state.round=0;state.score=0;state.rounds=[];state.used=[];$("live-score").textContent="0";nextRound();}
   function nextRound(){
     if(state.round>=5){finishGame();return;}
     state.current=randomBlock();$("round-number").textContent=state.round+1;$("block-name").textContent=state.current.name;$("block-id").textContent=state.current.id;
-    const img=$("block-image");img.onerror=()=>{img.onerror=null;img.src=makeFallbackTexture(state.current.id);};img.onload=()=>{img.style.opacity="1";};img.style.opacity="1";img.src=textureUrl(state.current.texture);
+    const img=$("block-image"),error=$("texture-error");
+    img.onerror=()=>{img.hidden=true;error.hidden=false;};
+    img.onload=()=>{img.hidden=false;error.hidden=true;};
+    img.hidden=false;error.hidden=true;img.src=textureUrl(state.current.texture);
     setGuess("#6B8E23");showScreen("game-screen");
   }
   function submitGuess(){const actual=hexToRgb(state.current.color),guess=hexToRgb(state.guess),distance=colorDistance(actual,guess),earned=scoreFor(distance);state.rounds.push({block:state.current.name,guess:state.guess,actual:state.current.color,earned,distance:Math.round(distance)});state.score+=earned;state.round++;$("live-score").textContent=state.score;$("your-result-swatch").style.background=state.guess;$("real-result-swatch").style.background=state.current.color;$("your-result-hex").textContent=state.guess;$("real-result-hex").textContent=state.current.color.toUpperCase();$("round-earned").textContent=earned.toLocaleString("de-DE");$("distance-value").textContent="Δ "+Math.round(distance);$("result-title").textContent=earned>900?"Perfekt getroffen!":earned>700?"Sehr nah dran!":earned>400?"Guter Versuch!":"Das geht noch genauer!";$("result-subtitle").textContent="Die Durchschnittsfarbe von "+state.current.name+" war "+state.current.color.toUpperCase()+"."; $("next-round").innerHTML=state.round>=5?'ERGEBNIS ANSEHEN <span>→</span>':'NÄCHSTE RUNDE <span>→</span>';showScreen("result-screen");}
   function finishGame(){$("final-score").textContent=state.score.toLocaleString("de-DE");showScreen("finish-screen");}
   function readScores(){try{return JSON.parse(localStorage.getItem("mc-color-scores")||"[]");}catch{return [];}}
-  function renderLeaderboard(target){const scores=readScores().sort((a,b)=>b.score-a.score).slice(0,10),el=$(target);if(!scores.length){el.innerHTML='<div class="empty-leaderboard">Noch keine Ergebnisse gespeichert. Starte das erste Spiel!</div>';return;}el.innerHTML=scores.map((s,i)=>'<div class="leader-row"><div class="leader-rank">#'+(i+1)+'</div><div><div class="leader-name">'+escapeHtml(s.name)+'</div><div class="leader-date">'+new Date(s.date).toLocaleDateString("de-DE")+'</div></div><div class="leader-score">'+s.score.toLocaleString("de-DE")+' P</div></div>').join("");}
   function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-  function saveScore(){const name=$("player-name").value.trim().slice(0,18)||"Spieler",scores=readScores();scores.push({name,score:state.score,date:new Date().toISOString()});scores.sort((a,b)=>b.score-a.score);localStorage.setItem("mc-color-scores",JSON.stringify(scores.slice(0,50)));renderLeaderboard("full-leaderboard");renderLeaderboard("home-leaderboard");showScreen("leaderboard-screen");}
+  function drawLeaderboard(target,scores){
+    const el=$(target);if(!scores.length){el.innerHTML='<div class="empty-leaderboard">Noch keine Ergebnisse gespeichert. Starte das erste Spiel!</div>';return;}
+    el.innerHTML=scores.map((s,i)=>'<div class="leader-row"><div class="leader-rank">#'+(i+1)+'</div><div><div class="leader-name">'+escapeHtml(s.player_name||s.name||"Spieler")+'</div><div class="leader-date">'+new Date(s.created_at||s.date).toLocaleDateString("de-DE")+'</div></div><div class="leader-score">'+Number(s.score).toLocaleString("de-DE")+' P</div></div>').join("");
+  }
+  async function renderLeaderboard(target){
+    const status=$(target==="full-leaderboard"?"full-leaderboard-status":"leaderboard-status");
+    if(supabaseClient){
+      const {data,error}=await supabaseClient.from("leaderboard").select("player_name,score,created_at").eq("game_mode","guess_block").order("score",{ascending:false}).order("created_at",{ascending:true}).limit(10);
+      if(!error){drawLeaderboard(target,data||[]);if(status)status.textContent="LIVE · Öffentliche Rangliste für alle Spieler";return;}
+      if(status)status.textContent="Online-Rangliste gerade nicht erreichbar – lokale Ergebnisse werden angezeigt.";
+    }else if(status){status.textContent="Online-Verbindung nicht verfügbar – lokale Ergebnisse werden angezeigt.";}
+    drawLeaderboard(target,readScores().sort((a,b)=>b.score-a.score).slice(0,10));
+  }
+  async function saveScore(){
+    const name=$("player-name").value.trim().slice(0,18)||"Spieler";
+    const local=readScores();local.push({name,score:state.score,date:new Date().toISOString()});local.sort((a,b)=>b.score-a.score);localStorage.setItem("mc-color-scores",JSON.stringify(local.slice(0,50)));
+    $("save-score").disabled=true;$("save-score").textContent="WIRD GESPEICHERT …";
+    let saved=false;
+    if(supabaseClient){
+      const {error}=await supabaseClient.from("leaderboard").insert({player_name:name,score:state.score,game_mode:"guess_block"});
+      saved=!error;
+    }
+    $("save-score").disabled=false;$("save-score").innerHTML='ERGEBNIS SPEICHERN <span>→</span>';
+    await Promise.all([renderLeaderboard("full-leaderboard"),renderLeaderboard("home-leaderboard")]);
+    if(!saved){const s=$("full-leaderboard-status");if(s)s.textContent="Ergebnis lokal gespeichert; Online-Speicherung hat nicht funktioniert.";}
+    showScreen("leaderboard-screen");
+  }
   window.startGuessGame=startGame;
   $("back-home").addEventListener("click",()=>showScreen("home-screen"));$("submit-guess").addEventListener("click",submitGuess);$("next-round").addEventListener("click",nextRound);$("save-score").addEventListener("click",saveScore);$("play-again").addEventListener("click",startGame);$("show-leaderboard").addEventListener("click",()=>{renderLeaderboard("full-leaderboard");showScreen("leaderboard-screen");});$("leaderboard-back").addEventListener("click",()=>showScreen("home-screen"));
   ["hue-range","saturation-range","brightness-range"].forEach(id=>$(id).addEventListener("input",updateFromSliders));
