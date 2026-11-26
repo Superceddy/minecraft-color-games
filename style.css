@@ -13,3 +13,7 @@
 .saturation-line input,.brightness-line input{background:linear-gradient(90deg,#888,#fff)}
 .hsb-preview-wrap{margin-bottom:20px}
 @media(max-width:390px){.hsb-line{grid-template-columns:80px 1fr 34px;gap:7px}.hsb-line label{font-size:8px}}
+
+/* Version 0.3.0 — smoother flat texture preview and public leaderboard */
+.block-image-wrap img{image-rendering:auto;image-rendering:smooth;object-fit:contain;filter:none;width:192px;height:192px}
+#texture-error{font:10px var(--mono);letter-spacing:.3px;color:#aab7ad;text-align:center;padding:18px}
