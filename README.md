@@ -3,7 +3,7 @@
 Mobile-friendly collection of Minecraft mini-games for Java Edition 1.21.1.
 
 ## Version 0.5.0
-- Expanded Guess the Block from 41 to 150+ vanilla block textures.
+- Expanded Guess the Block from 41 to 158 vanilla block textures.
 - Added a fallback texture host so a failed image source can retry automatically.
 - Expanded Minecraft Krillion to 50 question prompts; each round randomly selects seven.
 - Added a 20-second countdown, typo/abbreviation-tolerant answer matching, and six visible rarity tiers.
