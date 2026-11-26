@@ -30,3 +30,27 @@
 .krillion-question-wrap .next-button{margin-top:12px}
 @media(max-width:760px){.krillion-card{display:grid;grid-template-columns:116px 1fr}.krillion-art{height:100%;min-height:140px}}
 @media(max-width:390px){.krillion-card{grid-template-columns:95px 1fr}}
+
+
+/* Version 0.5.0 — Minecraft world atmosphere and Minellion-style rarity tiers */
+body{background:linear-gradient(180deg,#172b3a 0%,#1b2b30 34%,#18251d 70%,#101812 100%)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.22;background-image:linear-gradient(90deg,transparent 0 31px,#8ab4a0 32px,transparent 33px),linear-gradient(0deg,transparent 0 31px,#8ab4a0 32px,transparent 33px);background-size:64px 64px;mask-image:linear-gradient(180deg,transparent,#000 25%,#000 85%,transparent)}
+body:after{content:"";position:fixed;left:0;right:0;bottom:0;height:18vh;pointer-events:none;z-index:0;opacity:.34;background:linear-gradient(180deg,#79ad4d 0 9%,#5a853c 9% 17%,#76523a 17% 100%);background-size:48px 48px;clip-path:polygon(0 28%,7% 28%,7% 17%,14% 17%,14% 28%,23% 28%,23% 10%,31% 10%,31% 28%,40% 28%,40% 18%,48% 18%,48% 28%,59% 28%,59% 8%,67% 8%,67% 28%,77% 28%,77% 16%,85% 16%,85% 28%,94% 28%,94% 12%,100% 12%,100% 100%,0 100%)}
+.app-shell{position:relative;z-index:1}
+.krillion-art{background:linear-gradient(180deg,#85b957 0 15%,#63482f 15% 100%);position:relative}
+.krillion-art:before{content:"";position:absolute;inset:15% 0 0;background:repeating-linear-gradient(90deg,transparent 0 17px,#ffffff0b 17px 19px),repeating-linear-gradient(0deg,transparent 0 17px,#00000014 17px 19px)}
+.krillion-orbs{position:relative;z-index:1}
+.krillion-timer{max-width:620px;margin:0 auto 18px;padding:13px 17px;background:#1a271f;border:1px solid #40563e;border-radius:8px;box-shadow:0 7px 24px #0004}
+.timer-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;color:#b5c5b7;font:9px var(--mono);letter-spacing:1.2px}
+.timer-meta strong{font:13px var(--mono);color:#e8f0e2}.timer-meta b{font-size:20px;color:#b6df79}
+.timer-track{height:10px;border-radius:2px;background:#101812;border:1px solid #40513e;overflow:hidden}
+.timer-track span{display:block;width:100%;height:100%;background:linear-gradient(90deg,#8fc65b,#c9bf5b,#d7784d);transition:width .25s linear}
+.krillion-timer.timer-warning .timer-meta b{color:#ff8268}.krillion-timer.timer-warning .timer-track span{background:#e45e4c}
+.krillion-question-wrap{background:linear-gradient(180deg,#25372b,#1a281f 38%,#19251e);border-color:#506342;box-shadow:0 16px 48px #0005}
+.krillion-question-wrap h2{color:#f1f5e9}
+.krillion-feedback{background:#111b15;border-color:#536748}
+.rarity-text{font-weight:800!important}
+.rarity-basic{color:#c6d0c3!important}.rarity-uncommon{color:#77c66c!important}.rarity-rare{color:#69b9e8!important}.rarity-legendary{color:#c18af1!important}.rarity-mythic{color:#efb85d!important}.rarity-oneinaminellion{color:#ff8c63!important;text-shadow:0 0 14px #ff8c6355}
+.krillion-feedback-points{display:block;margin-top:8px;font:22px var(--mono)}
+.krillion-card .game-tags span:first-child{color:#b6df79;border-color:#6b8d4e}
+@media(max-width:760px){.krillion-timer{margin-bottom:13px}.timer-meta strong{font-size:12px}}
