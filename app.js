@@ -1,13 +1,13 @@
 (() => {
   const $ = (id) => document.getElementById(id);
   const screens = ["home-screen","game-screen","result-screen","finish-screen","krillion-screen","krillion-finish-screen","leaderboard-screen"];
-  const state = {round:0,score:0,rounds:[],current:null,guess:"#6B8E23",used:[],krillionRound:0,krillionScore:0,krillionQuestions:[],krillionCurrent:null};
+  const state = {round:0,score:0,rounds:[],current:null,guess:"#6B8E23",used:[],krillionRound:0,krillionScore:0,krillionQuestions:[],krillionCurrent:null,krillionTimer:null,krillionLocked:false,krillionTimeLeft:20};
   const MAX_DISTANCE = Math.sqrt(3 * 255 * 255);
   const supabaseClient = window.supabase?.createClient(
     "https://fjonruqyptpoxtwztgnx.supabase.co",
     "sb_publishable_ZOD_FFJkzyOOUSrW0w6CTg_DsRmBvHL"
   );
-  const textureUrl = (texture) => `https://mcasset.cloud/1.21.1/assets/minecraft/textures/block/${texture}.png`;
+  const textureUrls = (texture) => [`https://raw.githubusercontent.com/Faithful-Pack/Default-Java/1.21.1/assets/minecraft/textures/block/${texture}.png`,`https://mcasset.cloud/1.21.1/assets/minecraft/textures/block/${texture}.png`];
   const hexToRgb = (hex) => { const clean=hex.replace("#",""); return [0,2,4].map(i=>parseInt(clean.slice(i,i+2),16)); };
   const rgbToHex = (rgb) => "#"+rgb.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("").toUpperCase();
   const colorDistance = (a,b) => Math.sqrt(a.reduce((sum,v,i)=>sum+(v-b[i])**2,0));
@@ -46,7 +46,7 @@
     const img=$("block-image"),error=$("texture-error");
     img.onerror=()=>{img.hidden=true;error.hidden=false;};
     img.onload=()=>{img.hidden=false;error.hidden=true;};
-    img.hidden=false;error.hidden=true;img.src=textureUrl(state.current.texture);
+    img.hidden=false;error.hidden=true;const urls=textureUrls(state.current.texture);let sourceIndex=0;img.onerror=()=>{sourceIndex++;if(sourceIndex<urls.length){img.src=urls[sourceIndex];}else{img.hidden=true;error.hidden=false;}};img.onload=()=>{img.hidden=false;error.hidden=true;};img.src=urls[0];
     setGuess("#6B8E23");showScreen("game-screen");
   }
   function submitGuess(){const actual=hexToRgb(state.current.color),guess=hexToRgb(state.guess),distance=colorDistance(actual,guess),earned=scoreFor(distance);state.rounds.push({block:state.current.name,guess:state.guess,actual:state.current.color,earned,distance:Math.round(distance)});state.score+=earned;state.round++;$("live-score").textContent=state.score;$("your-result-swatch").style.background=state.guess;$("real-result-swatch").style.background=state.current.color;$("your-result-hex").textContent=state.guess;$("real-result-hex").textContent=state.current.color.toUpperCase();$("round-earned").textContent=earned.toLocaleString("de-DE");$("distance-value").textContent="Δ "+Math.round(distance);$("result-title").textContent=earned>900?"Perfekt getroffen!":earned>700?"Sehr nah dran!":earned>400?"Guter Versuch!":"Das geht noch genauer!";$("result-subtitle").textContent="Die Durchschnittsfarbe von "+state.current.name+" war "+state.current.color.toUpperCase()+"."; $("next-round").innerHTML=state.round>=5?'ERGEBNIS ANSEHEN <span>→</span>':'NÄCHSTE RUNDE <span>→</span>';showScreen("result-screen");}
@@ -81,39 +81,114 @@
     showScreen("leaderboard-screen");
   }
 
-  const KRILLION_QUESTIONS=[
-    {q:"Nenne einen Nether-Biom.",a:[["Nether-Ödland",10,["Nether Wastes","Netherwüste"]],["Karmesinwald",25,["Crimson Forest"]],["Seelensandtal",35,["Soul Sand Valley"]],["Wirrwald",45,["Warped Forest"]],["Basaltdeltas",100,["Basalt Deltas"]]]},
-    {q:"Nenne einen Block, der natürlich im End vorkommt.",a:[["Endstein",10,["End Stone"]],["Obsidian",25,[]],["Purpurblock",45,["Purpur"]],["Chorusblüte",70,["Chorus Flower"]],["Drachenei",100,["Dragon Egg"]]]},
-    {q:"Nenne einen passiven Mob.",a:[["Kuh",10,["Cow"]],["Schaf",10,["Sheep"]],["Axolotl",45,[]],["Mooshroom",65,["Pilzkuh"]],["Sniffer",100,["Schnüffler"]]]},
-    {q:"Nenne einen Gegenstand, den man durch Angeln bekommen kann.",a:[["Kabeljau",10,["Cod"]],["Lachs",15,["Salmon"]],["Tropischer Fisch",35,["Tropical Fish"]],["Tintenbeutel",25,["Ink Sac"]],["Namensschild",55,["Name Tag"]],["Nautilusschale",100,["Nautilus Shell"]]]},
-    {q:"Nenne einen Block, der Licht abgibt.",a:[["Fackel",10,["Torch"]],["Glowstone",20,["Leuchtstein"]],["Seelaterne",35,["Sea Lantern"]],["Shroomlight",55,["Pilzlicht"]],["Leuchtflechte",100,["Glow Lichen"]]]},
-    {q:"Nenne eine Holzart in Minecraft.",a:[["Eiche",10,["Oak"]],["Fichte",15,["Spruce"]],["Birke",20,["Birch"]],["Akazie",30,["Acacia"]],["Mangrove",45,[]],["Kirschholz",55,["Cherry"]],["Bambus",65,["Bamboo"]],["Wirrholz",100,["Warped"]]]},
-    {q:"Nenne einen Trankeffekt.",a:[["Heilung",10,["Instant Health"]],["Feuerresistenz",20,["Fire Resistance"]],["Nachtsicht",30,["Night Vision"]],["Langsamkeit",40,["Slowness"]],["Wasseratmung",50,["Water Breathing"]],["Sprungkraft",60,["Jump Boost"]],["Glück",100,["Luck"]]]},
-    {q:"Nenne ein Erz, das unterirdisch gefunden werden kann.",a:[["Kohle",10,["Coal"]],["Eisen",10,["Iron"]],["Kupfer",20,["Copper"]],["Gold",25,[]],["Redstone",30,[]],["Lapislazuli",40,["Lapis"]],["Diamant",50,["Diamond"]],["Smaragd",100,["Emerald"]]]},
-    {q:"Nenne eine Struktur in der Oberwelt.",a:[["Dorf",10,["Village"]],["Wüstentempel",25,["Desert Temple"]],["Ozeanmonument",45,["Ocean Monument"]],["Waldanwesen",55,["Woodland Mansion"]],["Prüfungskammer",100,["Trial Chambers"]]]},
-    {q:"Nenne einen Gegenstand, mit dem man sich fortbewegen kann.",a:[["Boot",10,["Boat"]],["Loren",25,["Minecart"]],["Elytren",35,["Elytra"]],["Sattel",45,[]],["Feuerwerksrakete",100,["Firework Rocket"]]]},
-    {q:"Nenne einen feindlichen Mob aus dem Nether.",a:[["Ghast",10,[]],["Piglin",15,[]],["Magmakubus",25,["Magma Cube"]],["Wither-Skelett",30,["Wither Skeleton"]],["Hoglin",40,[]],["Zoglin",100,[]],["Piglin-Barbar",85,["Piglin Brute"]]]},
-    {q:"Nenne einen Blumen- oder Pflanzenblock.",a:[["Löwenzahn",10,["Dandelion"]],["Mohn",10,["Poppy"]],["Seerose",25,["Lily Pad"]],["Sonnenblume",35,["Sunflower"]],["Spore Blossom",60,["Sporeblüte"]],["Kannenpflanze",100,["Pitcher Plant"]]]},
-    {q:"Nenne einen Gegenstand, den man aus Diamanten herstellen kann.",a:[["Diamantschwert",10,["Diamond Sword"]],["Diamantspitzhacke",15,["Diamond Pickaxe"]],["Diamantbrustplatte",25,["Diamond Chestplate"]],["Jukebox",45,["Plattenspieler"]],["Verzauberungstisch",100,["Enchanting Table"]]]},
-    {q:"Nenne einen Dorfbewohner-Beruf.",a:[["Bauer",10,["Farmer"]],["Bibliothekar",15,["Librarian"]],["Waffenschmied",30,["Weaponsmith"]],["Kartograf",35,["Cartographer"]],["Pfeilmacher",45,["Fletcher"]],["Gerber",55,["Leatherworker"]],["Steinmetz",100,["Mason"]]]}
+  const KRILLION_QUESTIONS = [
+    {q:"Nenne ein Biom im Nether.",a:[["Nether-Ödland",5,["Nether Wastes","Netherwüste"]],["Karmesinwald",9,["Crimson Forest"]],["Wirrwald",12,["Warped Forest"]],["Seelensandtal",17,["Soul Sand Valley"]],["Basaltdeltas",30,["Basalt Deltas"]]]},
+    {q:"Nenne ein Biom der Oberwelt.",a:[["Ebene",5,["Plains"]],["Wald",6,["Forest"]],["Wüste",7,["Desert"]],["Dschungel",9,["Jungle"]],["Blumenwald",12,["Flower Forest"]],["Pilzfelder",17,["Mushroom Fields"]],["Eisige Spitzen",20,["Frozen Peaks"]],["Kirschblütenhain",30,["Cherry Grove"]]]},
+    {q:"Nenne ein Biom im Ende.",a:[["Das Ende",5,["The End"]],["End-Mittelland",9,["End Midlands"]],["End-Hochland",12,["End Highlands"]],["End-Barrens",17,["End Barrens"]],["Kleine Endinseln",30,["Small End Islands"]]]},
+    {q:"Nenne einen passiven Mob.",a:[["Kuh",5,["Cow"]],["Schaf",5,["Sheep"]],["Schwein",6,["Pig"]],["Huhn",7,["Chicken"]],["Axolotl",12,[]],["Mooshroom",17,["Pilzkuh"]],["Sniffer",20,["Schnüffler"]],["Schreiter",30,["Strider"]]]},
+    {q:"Nenne einen Mob, der im Nether vorkommt.",a:[["Ghast",5,[]],["Piglin",6,[]],["Lohen",9,["Blaze"]],["Magmakubus",12,["Magma Cube"]],["Hoglin",17,[]],["Zoglin",20,[]],["Piglin-Barbar",30,["Piglin Brute"]]]},
+    {q:"Nenne einen Mob aus Minecraft.",a:[["Zombie",5,[]],["Skelett",5,["Skeleton"]],["Creeper",6,[]],["Enderman",7,[]],["Hexe",9,["Witch"]],["Delfin",12,["Dolphin"]],["Wächter",17,["Guardian"]],["Wärter",20,["Warden"]],["Eisbär",30,["Polar Bear"]]]},
+    {q:"Nenne etwas, das man beim Angeln bekommen kann.",a:[["Kabeljau",5,["Cod"]],["Lachs",6,["Salmon"]],["Tropischer Fisch",9,["Tropical Fish"]],["Tintenbeutel",12,["Ink Sac"]],["Namensschild",17,["Name Tag"]],["Nautilusschale",20,["Nautilus Shell"]],["Sattel",30,["Saddle"]]]},
+    {q:"Nenne einen Block, der Licht abgibt.",a:[["Fackel",5,["Torch"]],["Glowstone",7,["Leuchtstein"]],["Seelaterne",9,["Sea Lantern"]],["Laterne",12,["Lantern"]],["Shroomlight",17,["Pilzlicht"]],["Seelenlaterne",20,["Soul Lantern"]],["Froschlicht",30,["Froglight"]]]},
+    {q:"Nenne eine Holzart in Minecraft.",a:[["Eiche",5,["Oak"]],["Fichte",6,["Spruce"]],["Birke",7,["Birch"]],["Dschungelholz",9,["Jungle"]],["Akazie",12,["Acacia"]],["Mangrove",15,[]],["Kirche",17,["Cherry","Kirschholz"]],["Bambus",20,["Bamboo"]],["Wirrholz",30,["Warped"]]]},
+    {q:"Nenne einen Trankeffekt.",a:[["Heilung",5,["Instant Health"]],["Feuerresistenz",7,["Fire Resistance"]],["Nachtsicht",9,["Night Vision"]],["Langsamkeit",12,["Slowness"]],["Wasseratmung",15,["Water Breathing"]],["Unsichtbarkeit",17,["Invisibility"]],["Glück",20,["Luck"]],["Schwebekraft",30,["Levitation"]]]},
+    {q:"Nenne ein Erz in Minecraft.",a:[["Kohle",5,["Coal"]],["Eisen",6,["Iron"]],["Kupfer",7,["Copper"]],["Gold",9,[]],["Redstone",12,[]],["Lapislazuli",15,["Lapis"]],["Diamant",20,["Diamond"]],["Smaragd",30,["Emerald"]]]},
+    {q:"Nenne eine Struktur in der Oberwelt.",a:[["Dorf",5,["Village"]],["Wüstentempel",7,["Desert Temple"]],["Schiffswrack",9,["Shipwreck"]],["Dschungeltempel",12,["Jungle Temple"]],["Ozeanmonument",15,["Ocean Monument"]],["Waldanwesen",20,["Woodland Mansion"]],["Prüfungskammer",30,["Trial Chambers"]]]},
+    {q:"Nenne etwas, womit man sich in Minecraft fortbewegen kann.",a:[["Boot",5,["Boat"]],["Minecart",7,["Lore","Lore"]],["Pferd",9,["Horse"]],["Elytren",12,["Elytra"]],["Sattel",15,["Saddle"]],["Strider",20,["Schreiter"]],["Feuerwerksrakete",30,["Firework Rocket"]]]},
+    {q:"Nenne einen Dorfbewohner-Beruf.",a:[["Bauer",5,["Farmer"]],["Bibliothekar",7,["Librarian"]],["Kleriker",9,["Cleric"]],["Kartograf",12,["Cartographer"]],["Waffenschmied",15,["Weaponsmith"]],["Gerber",20,["Leatherworker"]],["Pfeilmacher",30,["Fletcher"]]]},
+    {q:"Nenne eine Blume in Minecraft.",a:[["Löwenzahn",5,["Dandelion"]],["Mohn",5,["Poppy"]],["Tulpe",7,["Tulip"]],["Kornblume",9,["Cornflower"]],["Allium",12,[]],["Sonnenblume",15,["Sunflower"]],["Spore Blossom",20,["Sporeblüte"]],["Wither-Rose",30,["Wither Rose"]]]},
+    {q:"Nenne etwas, das man mit Diamanten herstellen kann.",a:[["Diamantspitzhacke",5,["Diamond Pickaxe"]],["Diamantschwert",6,["Diamond Sword"]],["Diamantbrustplatte",9,["Diamond Chestplate"]],["Diamantstiefel",12,["Diamond Boots"]],["Jukebox",17,["Plattenspieler"]],["Verzauberungstisch",20,["Enchanting Table"]],["Feuerwerksstern",30,["Firework Star"]]]},
+    {q:"Nenne eine Verzauberung.",a:[["Schärfe",5,["Sharpness"]],["Haltbarkeit",6,["Unbreaking"]],["Effizienz",7,["Efficiency"]],["Glück",9,["Fortune"]],["Seide",12,["Silk Touch"]],["Reparatur",15,["Mending"]],["Seelenläufer",20,["Soul Speed"]],["Windstoß",30,["Wind Burst"]]]},
+    {q:"Nenne ein essbares Item.",a:[["Brot",5,["Bread"]],["Apfel",5,["Apple"]],["Steak",7,["Cooked Beef"]],["Goldener Apfel",9,["Golden Apple"]],["Kürbiskuchen",12,["Pumpkin Pie"]],["Chorusfrucht",15,["Chorus Fruit"]],["Verdächtiger Eintopf",20,["Suspicious Stew"]],["Verzauberter goldener Apfel",30,["Enchanted Golden Apple","Notch Apple"]]]},
+    {q:"Nenne einen Arbeitsplatz eines Dorfbewohners.",a:[["Komposter",5,["Composter"]],["Lesepult",7,["Lectern"]],["Braustand",9,["Brewing Stand"]],["Schmiedetisch",12,["Smithing Table"]],["Kartentisch",15,["Cartography Table"]],["Schleifstein",17,["Grindstone"]],["Kessel",20,["Cauldron"]],["Fass",30,["Barrel"]]]},
+    {q:"Nenne eine Farbstofffarbe.",a:[["Rot",5,["Red"]],["Blau",5,["Blue"]],["Gelb",6,["Yellow"]],["Grün",7,["Green"]],["Türkis",9,["Cyan"]],["Magenta",12,[]],["Hellgrau",17,["Light Gray"]],["Braun",20,["Brown"]]]},
+    {q:"Nenne einen Redstone-Bauteil.",a:[["Redstone-Staub",5,["Redstone Dust"]],["Hebel",6,["Lever"]],["Knopf",7,["Button"]],["Druckplatte",9,["Pressure Plate"]],["Redstone-Fackel",12,["Redstone Torch"]],["Beobachter",15,["Observer"]],["Zielblock",20,["Target"]],["Kalibrierter Sculk-Sensor",30,["Calibrated Sculk Sensor"]]]},
+    {q:"Nenne ein Höhlenbiom.",a:[["Tropfsteinhöhlen",5,["Dripstone Caves"]],["Üppige Höhlen",9,["Lush Caves"]],["Dunkle Tiefen",17,["Deep Dark"]]]},
+    {q:"Nenne eine Kupfer-Variante.",a:[["Kupferblock",5,["Copper Block"]],["Angeschlagener Kupferblock",9,["Exposed Copper"]],["Verwitterter Kupferblock",15,["Weathered Copper"]],["Oxidierter Kupferblock",20,["Oxidized Copper"]],["Gewachster oxidierter Kupferblock",30,["Waxed Oxidized Copper"]]]},
+    {q:"Nenne eine Art von Schiene.",a:[["Schiene",5,["Rail"]],["Antriebsschiene",9,["Powered Rail"]],["Sensorschiene",15,["Detector Rail"]],["Aktivierungsschiene",20,["Activator Rail"]]]},
+    {q:"Nenne einen Mob, den man zähmen kann.",a:[["Wolf",5,["Hund"]],["Katze",7,["Cat"]],["Papagei",9,["Parrot"]],["Pferd",12,["Horse"]],["Esel",15,["Donkey"]],["Maultier",17,["Mule"]],["Fuchs",20,["Fox"]],["Allay",30,["Vex?"]]]},
+    {q:"Nenne einen Boss in Minecraft.",a:[["Enderdrache",5,["Ender Dragon"]],["Wither",9,["Wither Boss"]]]},
+    {q:"Nenne eine Holzart, aus der es Boote gibt.",a:[["Eiche",5,["Oak"]],["Fichte",6,["Spruce"]],["Birke",7,["Birch"]],["Dschungel",9,["Jungle"]],["Akazie",12,["Acacia"]],["Dunkleiche",15,["Dark Oak"]],["Mangrove",20,[]],["Kirschholz",30,["Cherry"]]]},
+    {q:"Nenne eine Werkbank oder einen Handwerksblock.",a:[["Werkbank",5,["Crafting Table"]],["Ofen",6,["Furnace"]],["Amboss",9,["Anvil"]],["Schmelzofen",12,["Blast Furnace"]],["Räucherofen",15,["Smoker"]],["Steinsäge",17,["Stonecutter"]],["Webstuhl",20,["Loom"]],["Bücherregal",30,["Bookshelf"]]]},
+    {q:"Nenne einen Block, der von Schwerkraft beeinflusst wird.",a:[["Sand",5,[]],["Kies",6,["Gravel"]],["Roter Sand",9,["Red Sand"]],["Amboss",12,["Anvil"]],["Betonpulver",15,["Concrete Powder"]],["Drachenei",20,["Dragon Egg"]],["Spitzes Tropfstein",30,["Pointed Dripstone"]]]},
+    {q:"Nenne einen Block, der wassergefüllt werden kann.",a:[["Seetang",5,["Kelp"]],["Seegras",7,["Seagrass"]],["Seerose",9,["Lily Pad"]],["Schild",12,["Sign"]],["Leiter",15,["Ladder"]],["Zaun",20,["Fence"]],["Amethystknospe",30,["Amethyst Bud"]]]},
+    {q:"Nenne eine Dimension in Minecraft.",a:[["Oberwelt",5,["Overworld"]],["Nether",9,[]],["Ende",12,["The End"]]]},
+    {q:"Nenne einen Block, den man in der Wüste findet.",a:[["Sand",5,[]],["Kaktus",7,["Cactus"]],["Sandstein",9,["Sandstone"]],["Toter Busch",12,["Dead Bush"]],["Glatter Sandstein",17,["Smooth Sandstone"]],["Verdächtiger Sand",20,["Suspicious Sand"]],["Terrakotta",30,[]]]},
+    {q:"Nenne einen Block, den man im Dschungel findet.",a:[["Dschungelholz",5,["Jungle Log"]],["Lianen",7,["Vines"]],["Kakaobohnen",9,["Cocoa Beans"]],["Bambus",12,["Bamboo"]],["Melone",15,["Melon"]],["Moosblock",20,["Moss Block"]],["Riesige Tropfblätter",30,["Big Dripleaf"]]]},
+    {q:"Nenne eine Struktur im oder unter Wasser.",a:[["Schiffswrack",5,["Shipwreck"]],["Ozeanruine",9,["Ocean Ruins"]],["Ozeanmonument",15,["Ocean Monument"]],["Unterwasserruine",20,["Underwater Ruin"]],["Meeresdenkmal",30,["Monument"]]]},
+    {q:"Nenne eine Pflanze aus dem Nether.",a:[["Netherwarze",5,["Nether Wart"]],["Wirrpilz",9,["Warped Fungus"]],["Karmesinpilz",12,["Crimson Fungus"]],["Wirr-Ranken",17,["Twisting Vines"]],["Karmesin-Ranken",20,["Weeping Vines"]],["Seelenfeuer",30,["Soul Fire"]]]},
+    {q:"Nenne etwas, das man im Ende finden kann.",a:[["Endstein",5,["End Stone"]],["Obsidian",7,[]],["Chorusfrucht",9,["Chorus Fruit"]],["Chorusblüte",12,["Chorus Flower"]],["Shulker",17,[]],["Drachenei",20,["Dragon Egg"]],["Elytren",30,["Elytra"]]]},
+    {q:"Nenne ein Material, aus dem Rüstung besteht.",a:[["Leder",5,["Leather"]],["Eisen",7,["Iron"]],["Gold",9,["Golden"]],["Diamant",12,["Diamond"]],["Netherit",20,["Netherite"]],["Schildkrötenpanzer",30,["Turtle Shell"]]]},
+    {q:"Nenne ein Werkzeug in Minecraft.",a:[["Spitzhacke",5,["Pickaxe"]],["Axt",6,["Axe"]],["Schaufel",7,["Shovel"]],["Hacke",9,["Hoe"]],["Schere",12,["Shears"]],["Angel",15,["Fishing Rod"]],["Feuerzeug",20,["Flint and Steel"]],["Pinsel",30,["Brush"]]]},
+    {q:"Nenne ein Gebäude oder einen Ort in einem Dorf.",a:[["Haus",5,["House"]],["Schmiede",9,["Blacksmith"]],["Kirche",12,["Church"]],["Bibliothek",15,["Library"]],["Pflanzenfarm",20,["Farm"]],["Versammlungsplatz",30,["Meeting Point"]]]},
+    {q:"Nenne etwas, das man in einer antiken Stadt finden kann.",a:[["Sculk",5,["Sculk Block"]],["Sculk-Kreischer",9,["Sculk Shrieker"]],["Echo-Scherbe",15,["Echo Shard"]],["Disc-Fragmente",20,["Disc Fragment"]],["Verstärkte Deepslate",30,["Reinforced Deepslate"]]]},
+    {q:"Nenne etwas aus einer Prüfungskammer.",a:[["Kupferblock",5,["Copper Block"]],["Kupfergitter",9,["Copper Grate"]],["Spawner",12,["Trial Spawner"]],["Breeze-Rute",17,["Breeze Rod"]],["Schwerer Kern",30,["Heavy Core"]]]},
+    {q:"Nenne eine Nutzpflanze, die auf Ackerboden wächst.",a:[["Weizen",5,["Wheat"]],["Karotte",6,["Carrot"]],["Kartoffel",7,["Potato"]],["Rote Bete",9,["Beetroot"]],["Melone",12,["Melon"]],["Kürbis",15,["Pumpkin"]],["Kannenpflanze",20,["Pitcher Plant"]],["Fackellilie",30,["Torchflower"]]]},
+    {q:"Nenne etwas, das ein Dorfbewohner verkaufen kann.",a:[["Brot",5,["Bread"]],["Karte",7,["Map"]],["Bücherregal",9,["Bookshelf"]],["Namensschild",12,["Name Tag"]],["Sattel",15,["Saddle"]],["Diamantenausrüstung",20,["Diamond Gear"]],["Tropenfisch-Eimer",30,["Bucket of Tropical Fish"]]]},
+    {q:"Nenne eine Wetter- oder Himmelserscheinung.",a:[["Regen",5,["Rain"]],["Schnee",7,["Snow"]],["Gewitter",12,["Thunderstorm"]],["Blitz",17,["Lightning"]]]},
+    {q:"Nenne eine Eis- oder Schneeart.",a:[["Schnee",5,["Snow"]],["Eis",7,["Ice"]],["Packeis",12,["Packed Ice"]],["Blaueis",17,["Blue Ice"]],["Pulverschnee",20,["Powder Snow"]],["Frostläufer-Eis",30,["Frosted Ice"]]]},
+    {q:"Nenne einen Block, den man in üppigen Höhlen findet.",a:[["Moosblock",5,["Moss Block"]],["Lehm",7,["Clay"]],["Lianen",9,["Vines"]],["Leuchtbeeren",12,["Glow Berries"]],["Sporenblüte",17,["Spore Blossom"]],["Kleinblättrige Azalee",20,["Azalea"]],["Großes Tropfblatt",30,["Big Dripleaf"]]]},
+    {q:"Nenne ein Tier, das man in Minecraft findet.",a:[["Kuh",5,["Cow"]],["Schaf",5,["Sheep"]],["Huhn",6,["Chicken"]],["Fuchs",9,["Fox"]],["Panda",12,[]],["Biene",15,["Bee"]],["Gürteltier",20,["Armadillo"]],["Eisbär",30,["Polar Bear"]]]},
+    {q:"Nenne einen Gegenstand, den man in einer Lore transportieren kann.",a:[["Truhe",5,["Chest"]],["Trichter",9,["Hopper"]],["Ofen",12,["Furnace"]],["TNT",17,[]],["Spawner",20,["Monster Spawner"]],["Befehlsblock",30,["Command Block"]]]},
+    {q:"Nenne einen Block, der im Nether vorkommt.",a:[["Netherrack",5,[]],["Seelensand",7,["Soul Sand"]],["Netherziegel",9,["Nether Bricks"]],["Basalt",12,[]],["Schwarzstein",15,["Blackstone"]],["Golderz des Nethers",20,["Nether Gold Ore"]],["Antiker Schrott",30,["Ancient Debris"]]]},
+    {q:"Nenne einen Gegenstand aus Archäologie oder Ausgrabungen.",a:[["Tonscherbe",5,["Pottery Sherd"]],["Pinsel",7,["Brush"]],["Smaragd",9,["Emerald"]],["Schnüffler-Ei",12,["Sniffer Egg"]],["Schallplattenfragment",17,["Disc Fragment"]],["Angler-Tonscherbe",20,["Angler Pottery Sherd"]],["Bogen-Tonscherbe",30,["Archer Pottery Sherd"]]]}
   ];
-  const normalizeKrillionAnswer=v=>String(v).normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  const RARITY = [{name:"Basic",min:5,max:7},{name:"Uncommon",min:8,max:11},{name:"Rare",min:12,max:15},{name:"Legendary",min:16,max:19},{name:"Mythic",min:20,max:25},{name:"One in a Minellion",min:30,max:30}];
+  const rarityFor = points => RARITY.find(t=>points>=t.min&&points<=t.max)||RARITY[0];
+  const normalizeKrillionAnswer = value => String(value).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]/g,"");
+  function editDistance(a,b){
+    if(Math.abs(a.length-b.length)>2)return 99;
+    let prev=Array.from({length:b.length+1},(_,i)=>i);
+    for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=cur;}
+    return prev[b.length];
+  }
+  function findKrillionAnswer(raw){
+    const key=normalizeKrillionAnswer(raw);if(!key)return null;
+    const entries=state.krillionCurrent.a;
+    for(const entry of entries){for(const alias of [entry[0],...(entry[2]||[])])if(normalizeKrillionAnswer(alias)===key)return {entry,matched:alias,exact:true};}
+    if(key.length<4)return null;
+    let best=null,bestDistance=99;
+    for(const entry of entries)for(const alias of [entry[0],...(entry[2]||[])]){
+      const candidate=normalizeKrillionAnswer(alias);const prefixes=[candidate,candidate.slice(0,key.length)];
+      if(candidate.startsWith(key))return {entry,matched:alias,exact:false};
+      const limit=key.length>=9?2:1;
+      for(const option of prefixes){const distance=editDistance(key,option);if(distance<=limit&&distance<bestDistance){best={entry,matched:alias,exact:false};bestDistance=distance;}}
+    }
+    return best;
+  }
+  function clearKrillionTimer(){if(state.krillionTimer){clearInterval(state.krillionTimer);state.krillionTimer=null;}}
+  function updateKrillionTimer(){
+    $("krillion-time-left").textContent=state.krillionTimeLeft;
+    $("krillion-timer-fill").style.width=(state.krillionTimeLeft/20*100)+"%";
+    $("krillion-timer").classList.toggle("timer-warning",state.krillionTimeLeft<=5);
+  }
+  function startKrillionTimer(){
+    clearKrillionTimer();state.krillionTimeLeft=20;updateKrillionTimer();
+    state.krillionTimer=setInterval(()=>{state.krillionTimeLeft--;updateKrillionTimer();if(state.krillionTimeLeft<=0)resolveKrillionAnswer("",true);},1000);
+  }
   function startKrillion(){
     const pool=[...KRILLION_QUESTIONS];for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
     state.krillionQuestions=pool.slice(0,7);state.krillionRound=0;state.krillionScore=0;showKrillionQuestion();
   }
   function showKrillionQuestion(){
-    if(state.krillionRound>=7){$("krillion-final-score").textContent=state.krillionScore;showScreen("krillion-finish-screen");return;}
-    state.krillionCurrent=state.krillionQuestions[state.krillionRound];$("krillion-round").textContent=state.krillionRound+1;$("krillion-score").textContent=state.krillionScore;$("krillion-question").textContent=state.krillionCurrent.q;$("krillion-answer").value="";$("krillion-answer").disabled=false;$("krillion-feedback").hidden=true;$("krillion-submit").hidden=false;$("krillion-next").hidden=true;showScreen("krillion-screen");
+    clearKrillionTimer();
+    if(state.krillionRound>=7){$("krillion-final-score").textContent=state.krillionScore;$("krillion-final-max").textContent="210";showScreen("krillion-finish-screen");return;}
+    state.krillionCurrent=state.krillionQuestions[state.krillionRound];state.krillionLocked=false;
+    $("krillion-round").textContent=state.krillionRound+1;$("krillion-score").textContent=state.krillionScore;$("krillion-question").textContent=state.krillionCurrent.q;$("krillion-answer").value="";$("krillion-answer").disabled=false;$("krillion-feedback").hidden=true;$("krillion-submit").hidden=false;$("krillion-next").hidden=true;
+    showScreen("krillion-screen");startKrillionTimer();$("krillion-answer").focus();
   }
-  function submitKrillionAnswer(){
-    const raw=$("krillion-answer").value.trim();if(!raw){$("krillion-answer").focus();return;}
-    const key=normalizeKrillionAnswer(raw);const match=state.krillionCurrent.a.find(([label,points,aliases])=>[label,...aliases].some(alias=>normalizeKrillionAnswer(alias)===key));
-    const earned=match?match[1]:0;state.krillionScore+=earned;state.krillionRound++;$("krillion-score").textContent=state.krillionScore;$("krillion-answer").disabled=true;$("krillion-submit").hidden=true;$("krillion-feedback").hidden=false;
-    $("krillion-feedback-title").textContent=match?(earned>=70?"Seltene Antwort!":earned>=40?"Gute Antwort!":"Antwort erkannt!"):"Nicht in der Antwortliste";
-    $("krillion-feedback-copy").textContent=match?match[0]+" · "+earned+" Punkte":"0 Punkte. Eine mögliche Antwort: "+[...state.krillionCurrent.a].sort((a,b)=>b[1]-a[1])[0][0]+".";
-    $("krillion-feedback-points").textContent="+"+earned;$("krillion-next").hidden=false;$("krillion-next").textContent=state.krillionRound>=7?"ERGEBNIS ANSEHEN →":"NÄCHSTE FRAGE →";
+  function resolveKrillionAnswer(raw,timedOut=false){
+    if(state.krillionLocked)return;state.krillionLocked=true;clearKrillionTimer();
+    const match=timedOut?null:findKrillionAnswer(raw);const earned=match?match.entry[1]:0;state.krillionScore+=earned;$("krillion-score").textContent=state.krillionScore;$("krillion-answer").disabled=true;$("krillion-submit").hidden=true;$("krillion-feedback").hidden=false;
+    const tier=match?rarityFor(earned):null;
+    $("krillion-feedback-title").textContent=timedOut?"Zeit abgelaufen":match?(tier.name+" · Antwort erkannt"):"Antwort nicht erkannt";
+    $("krillion-feedback-title").className=match?"rarity-text rarity-"+tier.name.toLowerCase().replace(/[^a-z]/g,""):"";
+    $("krillion-feedback-copy").textContent=timedOut?"Du hast in dieser Frage keine Punkte erhalten.":match?("Gewertet als: "+match.entry[0]+(match.exact?"":" · Schreibweise automatisch erkannt")):"Leider keine Punkte. Es wird keine Musterlösung angezeigt.";
+    $("krillion-feedback-points").textContent="+"+earned+" Punkte";$("krillion-feedback-points").className=match?"rarity-text rarity-"+tier.name.toLowerCase().replace(/[^a-z]/g,""):"";
+    $("krillion-next").hidden=false;$("krillion-next").textContent=state.krillionRound>=6?"ERGEBNIS ANSEHEN →":"NÄCHSTE FRAGE →";
   }
+  function submitKrillionAnswer(){const raw=$("krillion-answer").value.trim();if(!raw){$("krillion-answer").focus();return;}resolveKrillionAnswer(raw,false);}
+  function nextKrillionQuestion(){state.krillionRound++;showKrillionQuestion();}
   async function saveKrillionScore(){
     const name=$("krillion-player-name").value.trim().slice(0,18)||"Spieler";$("krillion-save-score").disabled=true;$("krillion-save-score").textContent="WIRD GESPEICHERT …";
     let saved=false;if(supabaseClient){const {error}=await supabaseClient.from("leaderboard").insert({player_name:name,score:state.krillionScore,game_mode:"minecraft_krillion"});saved=!error;}
@@ -122,7 +197,7 @@
   }
 
   window.startGuessGame=startGame;
-  $("back-home").addEventListener("click",()=>showScreen("home-screen"));$("submit-guess").addEventListener("click",submitGuess);$("next-round").addEventListener("click",nextRound);$("save-score").addEventListener("click",saveScore);$("play-again").addEventListener("click",startGame);$("show-leaderboard").addEventListener("click",()=>{renderLeaderboard("full-leaderboard");showScreen("leaderboard-screen");});$("leaderboard-back").addEventListener("click",()=>showScreen("home-screen"));$("start-krillion").addEventListener("click",startKrillion);$("krillion-home").addEventListener("click",()=>showScreen("home-screen"));$("krillion-submit").addEventListener("click",submitKrillionAnswer);$("krillion-answer").addEventListener("keydown",e=>{if(e.key==="Enter")submitKrillionAnswer();});$("krillion-next").addEventListener("click",showKrillionQuestion);$("krillion-save-score").addEventListener("click",saveKrillionScore);$("krillion-play-again").addEventListener("click",startKrillion);
+  $("back-home").addEventListener("click",()=>showScreen("home-screen"));$("submit-guess").addEventListener("click",submitGuess);$("next-round").addEventListener("click",nextRound);$("save-score").addEventListener("click",saveScore);$("play-again").addEventListener("click",startGame);$("show-leaderboard").addEventListener("click",()=>{renderLeaderboard("full-leaderboard");showScreen("leaderboard-screen");});$("leaderboard-back").addEventListener("click",()=>showScreen("home-screen"));$("start-krillion").addEventListener("click",startKrillion);$("krillion-home").addEventListener("click",()=>showScreen("home-screen"));$("krillion-submit").addEventListener("click",submitKrillionAnswer);$("krillion-answer").addEventListener("keydown",e=>{if(e.key==="Enter")submitKrillionAnswer();});$("krillion-next").addEventListener("click",nextKrillionQuestion);$("krillion-save-score").addEventListener("click",saveKrillionScore);$("krillion-play-again").addEventListener("click",startKrillion);
   ["hue-range","saturation-range","brightness-range"].forEach(id=>$(id).addEventListener("input",updateFromSliders));
   $("hex-input").addEventListener("input",e=>{const value=e.target.value.replace(/[^0-9a-f]/gi,"").slice(0,6);e.target.value=value;if(value.length===6)setGuess("#"+value);});
   $("copy-hex").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(state.guess);$("copy-hex").textContent="OK";setTimeout(()=>$("copy-hex").textContent="COPY",900);}catch{$("hex-input").select();}});
