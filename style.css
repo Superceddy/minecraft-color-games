@@ -10,47 +10,47 @@
 .hsb-line input::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#f5f7f1;border:3px solid #26352b;box-shadow:0 0 0 1px #dce8d8;cursor:pointer}
 .hsb-line input::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:#f5f7f1;border:3px solid #26352b;box-shadow:0 0 0 1px #dce8d8;cursor:pointer}
 .hue-line input{background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00)}
-.saturation-line input,.brightness-line input{background:linear-gradient(90deg,#888,#fff)}
+.saturation-line input,.brightness-line input{background:var(--track)}
 .hsb-preview-wrap{margin-bottom:20px}
 @media(max-width:390px){.hsb-line{grid-template-columns:80px 1fr 34px;gap:7px}.hsb-line label{font-size:8px}}
 
 /* Version 0.3.0 — smoother flat texture preview and public leaderboard */
-.block-image-wrap img{image-rendering:auto;image-rendering:smooth;object-fit:contain;filter:none;width:192px;height:192px}
+.block-image-wrap img{image-rendering:pixelated;image-rendering:crisp-edges;object-fit:contain;filter:none;width:256px;height:256px;max-width:100%;max-height:100%}
 #texture-error{font:10px var(--mono);letter-spacing:.3px;color:#aab7ad;text-align:center;padding:18px}
-
-/* Version 0.4.0 — Minecraft Krillion */
-.krillion-card{cursor:pointer;color:inherit;font:inherit;width:100%;display:block}
-.krillion-card:hover{transform:translateY(-4px);border-color:#82b357;box-shadow:0 12px 30px #0003}
-.krillion-art{background:radial-gradient(circle at 50% 45%,#485b3d,#17251c 70%);position:relative}
-.krillion-orbs{display:flex;align-items:center;gap:8px}.krillion-orbs i{width:29px;height:29px;border-radius:50%;background:#c9df8b;box-shadow:0 0 22px #b8e58988}
-.krillion-orbs i:nth-child(2){width:43px;height:43px;background:#a5c66d}.krillion-orbs i:nth-child(3){width:34px;height:34px;background:#6c9e64}.krillion-orbs i:nth-child(4){width:20px;height:20px;background:#e6c36f}
-.krillion-art>span{position:absolute;bottom:12px;right:13px;font:9px var(--mono);letter-spacing:1px;color:#d5e5c4}
-.krillion-question-wrap{max-width:620px}.krillion-question-wrap h2{font-size:clamp(25px,4vw,36px);line-height:1.25}.krillion-answer-input{margin:10px 0 13px}
-.krillion-feedback{margin:17px 0;padding:17px;border:1px solid var(--line);border-radius:6px;background:#121b16}.krillion-feedback strong{color:var(--green);font-size:15px}.krillion-feedback p{color:#aab7ad;font-size:12px;line-height:1.6}.krillion-feedback>b{font:22px var(--mono);color:var(--green)}
-.krillion-question-wrap .next-button{margin-top:12px}
-@media(max-width:760px){.krillion-card{display:grid;grid-template-columns:116px 1fr}.krillion-art{height:100%;min-height:140px}}
-@media(max-width:390px){.krillion-card{grid-template-columns:95px 1fr}}
-
 
 /* Version 0.5.0 — Minecraft world atmosphere and Minellion-style rarity tiers */
 body{background:linear-gradient(180deg,#172b3a 0%,#1b2b30 34%,#18251d 70%,#101812 100%)}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.22;background-image:linear-gradient(90deg,transparent 0 31px,#8ab4a0 32px,transparent 33px),linear-gradient(0deg,transparent 0 31px,#8ab4a0 32px,transparent 33px);background-size:64px 64px;mask-image:linear-gradient(180deg,transparent,#000 25%,#000 85%,transparent)}
 body:after{content:"";position:fixed;left:0;right:0;bottom:0;height:18vh;pointer-events:none;z-index:0;opacity:.34;background:linear-gradient(180deg,#79ad4d 0 9%,#5a853c 9% 17%,#76523a 17% 100%);background-size:48px 48px;clip-path:polygon(0 28%,7% 28%,7% 17%,14% 17%,14% 28%,23% 28%,23% 10%,31% 10%,31% 28%,40% 28%,40% 18%,48% 18%,48% 28%,59% 28%,59% 8%,67% 8%,67% 28%,77% 28%,77% 16%,85% 16%,85% 28%,94% 28%,94% 12%,100% 12%,100% 100%,0 100%)}
 .app-shell{position:relative;z-index:1}
-.krillion-art{background:linear-gradient(180deg,#85b957 0 15%,#63482f 15% 100%);position:relative}
-.krillion-art:before{content:"";position:absolute;inset:15% 0 0;background:repeating-linear-gradient(90deg,transparent 0 17px,#ffffff0b 17px 19px),repeating-linear-gradient(0deg,transparent 0 17px,#00000014 17px 19px)}
-.krillion-orbs{position:relative;z-index:1}
-.krillion-timer{max-width:620px;margin:0 auto 18px;padding:13px 17px;background:#1a271f;border:1px solid #40563e;border-radius:8px;box-shadow:0 7px 24px #0004}
-.timer-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;color:#b5c5b7;font:9px var(--mono);letter-spacing:1.2px}
-.timer-meta strong{font:13px var(--mono);color:#e8f0e2}.timer-meta b{font-size:20px;color:#b6df79}
-.timer-track{height:10px;border-radius:2px;background:#101812;border:1px solid #40513e;overflow:hidden}
-.timer-track span{display:block;width:100%;height:100%;background:linear-gradient(90deg,#8fc65b,#c9bf5b,#d7784d);transition:width .25s linear}
-.krillion-timer.timer-warning .timer-meta b{color:#ff8268}.krillion-timer.timer-warning .timer-track span{background:#e45e4c}
-.krillion-question-wrap{background:linear-gradient(180deg,#25372b,#1a281f 38%,#19251e);border-color:#506342;box-shadow:0 16px 48px #0005}
-.krillion-question-wrap h2{color:#f1f5e9}
-.krillion-feedback{background:#111b15;border-color:#536748}
-.rarity-text{font-weight:800!important}
-.rarity-basic{color:#c6d0c3!important}.rarity-uncommon{color:#77c66c!important}.rarity-rare{color:#69b9e8!important}.rarity-legendary{color:#c18af1!important}.rarity-mythic{color:#efb85d!important}.rarity-oneinaminellion{color:#ff8c63!important;text-shadow:0 0 14px #ff8c6355}
-.krillion-feedback-points{display:block;margin-top:8px;font:22px var(--mono)}
-.krillion-card .game-tags span:first-child{color:#b6df79;border-color:#6b8d4e}
-@media(max-width:760px){.krillion-timer{margin-bottom:13px}.timer-meta strong{font-size:12px}}
+@media(max-width:760px){
+
+/* Version 0.7.0 — Colorle, crisp vanilla textures and live HSV sliders */
+.colorle-card{cursor:pointer;color:inherit;font:inherit;width:100%;display:block}
+.colorle-card:hover{transform:translateY(-4px);border-color:#82b357;box-shadow:0 12px 30px #0003}
+.colorle-card .palette-art{background:radial-gradient(circle at 50% 45%,#485b3d,#17251c 70%);position:relative}
+.colorle-card .palette-art>span{position:absolute;bottom:12px;right:13px;font:9px var(--mono);letter-spacing:1px;color:#d5e5c4}
+.colorle-wrap{max-width:680px;background:linear-gradient(180deg,#25372b,#1a281f 38%,#19251e);border-color:#506342;box-shadow:0 16px 48px #0005}
+.colorle-wrap h2{color:#f1f5e9;font-size:clamp(25px,4vw,36px);line-height:1.25}
+.colorle-target-card{display:flex;align-items:center;gap:17px;margin:22px 0;padding:14px;background:#111b15;border:1px solid #536748;border-radius:8px}
+.colorle-target-swatch{width:96px;height:96px;flex:0 0 96px;border-radius:5px;border:1px solid #ffffff44;box-shadow:inset 0 0 0 1px #0003}
+.colorle-target-card span{display:block;color:#9eaf9f;font:9px var(--mono);letter-spacing:1px;margin-bottom:8px}
+.colorle-target-card strong{font:18px var(--mono);color:#eaf2e6}
+.colorle-input-wrap{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:stretch}
+.colorle-input-wrap .player-name-input{margin:0;min-width:0}
+.colorle-input-wrap .submit-guess{width:auto;margin:0;padding:0 18px}
+.colorle-status{font-size:12px;color:#c1d0c1;line-height:1.5;margin:14px 0}
+.colorle-guesses{display:grid;gap:8px;margin-top:15px}
+.colorle-guess-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;background:#111b15;border:1px solid #ffffff18;border-radius:6px}
+.colorle-guess-swatch{width:30px;height:30px;border-radius:4px;border:1px solid #ffffff40}
+.colorle-guess-row strong{font-size:12px;overflow-wrap:anywhere}
+.colorle-guess-similarity{font:10px var(--mono);color:#c6d9bd}
+.colorle-guess-row small{grid-column:2/-1;color:#819282;font:9px var(--mono)}
+.colorle-finish{margin-top:20px;padding:17px;background:#111b15;border:1px solid #536748;border-radius:7px}
+.colorle-finish h3{margin:0 0 14px;color:#d5e9c9}
+.colorle-reveal{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.colorle-reveal>span{width:48px;height:48px;border-radius:4px;border:1px solid #ffffff44}
+.colorle-reveal strong,.colorle-reveal small{display:block}
+.colorle-reveal small{margin-top:4px;color:#91a392;font:9px var(--mono)}
+.colorle-finish .submit-guess{margin:0}
+@media(max-width:520px){.colorle-target-swatch{width:76px;height:76px;flex-basis:76px}.colorle-input-wrap{grid-template-columns:1fr}.colorle-input-wrap .submit-guess{min-height:45px}.colorle-guess-row{grid-template-columns:30px minmax(0,1fr) auto;gap:7px}}
