@@ -69,15 +69,14 @@
           </section>
           <section class="answer-panel">
             <div class="answer-head"><div><span class="eyebrow">DEIN TIPP</span><h3>Wähle eine Farbe</h3></div><div class="round-points"><b>1000</b><span>MAX. PUNKTE</span></div></div>
-            <div class="color-preview-wrap"><div id="color-preview" class="color-preview"></div><div class="preview-meta"><span>DEINE FARBE</span><strong id="preview-hex">#6B8E23</strong></div></div>
-            <div class="picker-row"><label for="color-picker">FARBAUSWAHL</label><input id="color-picker" type="color" value="#6b8e23" aria-label="Farbe auswählen"></div>
-            <div class="rgb-controls">
-              <div class="control-title"><label>RGB-WERTE</label><span id="rgb-readout">107, 142, 35</span></div>
-              <div class="slider-line"><label for="red-range">R</label><input id="red-range" type="range" min="0" max="255" value="107"><output id="red-value">107</output></div>
-              <div class="slider-line"><label for="green-range">G</label><input id="green-range" type="range" min="0" max="255" value="142"><output id="green-value">142</output></div>
-              <div class="slider-line"><label for="blue-range">B</label><input id="blue-range" type="range" min="0" max="255" value="35"><output id="blue-value">35</output></div>
+            <div class="color-preview-wrap hsb-preview-wrap"><div id="color-preview" class="color-preview"></div><div class="preview-meta"><span>DEINE FARBE</span><strong id="preview-hex">#6B8E23</strong></div></div>
+            <div class="hsb-controls">
+              <div class="control-title"><label>FARBEINSTELLUNG</label><span>HSB / HSV</span></div>
+              <div class="hsb-line hue-line"><label for="hue-range">FARBE</label><input id="hue-range" type="range" min="0" max="360" value="84"><output id="hue-value">84°</output></div>
+              <div class="hsb-line saturation-line"><label for="saturation-range">SÄTTIGUNG</label><input id="saturation-range" type="range" min="0" max="100" value="75"><output id="saturation-value">75%</output></div>
+              <div class="hsb-line brightness-line"><label for="brightness-range">HELLIGKEIT</label><input id="brightness-range" type="range" min="0" max="100" value="56"><output id="brightness-value">56%</output></div>
             </div>
-            <div class="hex-control"><label for="hex-input">HEX-CODE</label><div class="hex-input-wrap"><span>#</span><input id="hex-input" maxlength="6" value="6B8E23" spellcheck="false"><button id="copy-hex" type="button" title="HEX kopieren">COPY</button></div></div>
+            <div class="hex-control"><label for="hex-input">HEX-CODE</label><div class="hex-input-wrap"><span>#</span><input id="hex-input" maxlength="6" value="6B8E23" spellcheck="false" aria-label="HEX-Farbcode"><button id="copy-hex" type="button" title="HEX kopieren">COPY</button></div></div>
             <button class="submit-guess" id="submit-guess">FARBE ABGEBEN <span>→</span></button>
             <p class="submit-note">Du kannst deine Farbe bis zur Abgabe beliebig anpassen.</p>
           </section>
