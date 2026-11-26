@@ -14,7 +14,7 @@ A mobile-friendly collection of Minecraft mini-games focused on average block co
 - Main menu with game selection
 - **Guess the Block**: five rounds, HEX input and HSB sliders
 - RGB Euclidean color-distance scoring (0–1000 points per round)
-- Local top-10 leaderboard stored in the browser
+- Public top-10 leaderboard backed by Supabase, with local fallback
 - Responsive layout for phones, tablets and desktop
 - Game cards prepared for future color-based mini-games
 
