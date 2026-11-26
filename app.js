@@ -82,20 +82,20 @@
   }
 
   const KRILLION_QUESTIONS=[
-    {q:"Nenne einen Nether-Biom.",a:[["Nether-Ödland",10,["Nether Wastes","Netherwüste"]],["Karmesinwald",25,["Crimson Forest"]],["Seelensandtal",35,["Soul Sand Valley"]],["Wirrwald",45,["Warped Forest"]],["Basaltdeltas",55,["Basalt Deltas"]]]},
+    {q:"Nenne einen Nether-Biom.",a:[["Nether-Ödland",10,["Nether Wastes","Netherwüste"]],["Karmesinwald",25,["Crimson Forest"]],["Seelensandtal",35,["Soul Sand Valley"]],["Wirrwald",45,["Warped Forest"]],["Basaltdeltas",100,["Basalt Deltas"]]]},
     {q:"Nenne einen Block, der natürlich im End vorkommt.",a:[["Endstein",10,["End Stone"]],["Obsidian",25,[]],["Purpurblock",45,["Purpur"]],["Chorusblüte",70,["Chorus Flower"]],["Drachenei",100,["Dragon Egg"]]]},
-    {q:"Nenne einen passiven Mob.",a:[["Kuh",10,["Cow"]],["Schaf",10,["Sheep"]],["Axolotl",45,[]],["Mooshroom",65,["Pilzkuh"]],["Sniffer",85,["Schnüffler"]]]},
-    {q:"Nenne einen Gegenstand, den man durch Angeln bekommen kann.",a:[["Kabeljau",10,["Cod"]],["Lachs",15,["Salmon"]],["Tropischer Fisch",35,["Tropical Fish"]],["Tintenbeutel",25,["Ink Sac"]],["Namensschild",55,["Name Tag"]],["Sattel",70,[]]]},
-    {q:"Nenne einen Block, der Licht abgibt.",a:[["Fackel",10,["Torch"]],["Glowstone",20,["Leuchtstein"]],["Seelaterne",35,["Sea Lantern"]],["Shroomlight",55,["Pilzlicht"]],["Leuchtflechte",70,["Glow Lichen"]]]},
-    {q:"Nenne eine Holzart in Minecraft.",a:[["Eiche",10,["Oak"]],["Fichte",15,["Spruce"]],["Birke",20,["Birch"]],["Akazie",30,["Acacia"]],["Mangrove",45,[]],["Kirschholz",55,["Cherry"]],["Bambus",65,["Bamboo"]],["Wirrholz",80,["Warped"]]]},
-    {q:"Nenne einen Trankeffekt.",a:[["Heilung",10,["Instant Health"]],["Feuerresistenz",20,["Fire Resistance"]],["Nachtsicht",30,["Night Vision"]],["Langsamkeit",40,["Slowness"]],["Wasseratmung",50,["Water Breathing"]],["Sprungkraft",60,["Jump Boost"]],["Glück",90,["Luck"]]]},
-    {q:"Nenne ein Erz, das unterirdisch gefunden werden kann.",a:[["Kohle",10,["Coal"]],["Eisen",10,["Iron"]],["Kupfer",20,["Copper"]],["Gold",25,[]],["Redstone",30,[]],["Lapislazuli",40,["Lapis"]],["Diamant",50,["Diamond"]],["Smaragd",70,["Emerald"]]]},
-    {q:"Nenne eine Struktur in der Oberwelt.",a:[["Dorf",10,["Village"]],["Wüstentempel",25,["Desert Temple"]],["Ozeanmonument",45,["Ocean Monument"]],["Waldanwesen",55,["Woodland Mansion"]],["Prüfungskammer",80,["Trial Chambers"]]]},
-    {q:"Nenne einen Gegenstand, mit dem man sich fortbewegen kann.",a:[["Boot",10,["Boat"]],["Loren",25,["Minecart"]],["Elytren",35,["Elytra"]],["Sattel",45,[]],["Feuerwerksrakete",65,["Firework Rocket"]]]},
-    {q:"Nenne einen feindlichen Mob aus dem Nether.",a:[["Ghast",10,[]],["Piglin",15,[]],["Magmakubus",25,["Magma Cube"]],["Wither-Skelett",30,["Wither Skeleton"]],["Hoglin",40,[]],["Zoglin",65,[]],["Piglin-Barbar",85,["Piglin Brute"]]]},
-    {q:"Nenne einen Blumen- oder Pflanzenblock.",a:[["Löwenzahn",10,["Dandelion"]],["Mohn",10,["Poppy"]],["Seerose",25,["Lily Pad"]],["Sonnenblume",35,["Sunflower"]],["Spore Blossom",60,["Sporeblüte"]],["Kannenpflanze",85,["Pitcher Plant"]]]},
-    {q:"Nenne einen Gegenstand, den man aus Diamanten herstellen kann.",a:[["Diamantschwert",10,["Diamond Sword"]],["Diamantspitzhacke",15,["Diamond Pickaxe"]],["Diamantbrustplatte",25,["Diamond Chestplate"]],["Jukebox",45,["Plattenspieler"]],["Verzauberungstisch",55,["Enchanting Table"]]]},
-    {q:"Nenne einen Dorfbewohner-Beruf.",a:[["Bauer",10,["Farmer"]],["Bibliothekar",15,["Librarian"]],["Waffenschmied",30,["Weaponsmith"]],["Kartograf",35,["Cartographer"]],["Pfeilmacher",45,["Fletcher"]],["Gerber",55,["Leatherworker"]],["Steinmetz",65,["Mason"]]]}
+    {q:"Nenne einen passiven Mob.",a:[["Kuh",10,["Cow"]],["Schaf",10,["Sheep"]],["Axolotl",45,[]],["Mooshroom",65,["Pilzkuh"]],["Sniffer",100,["Schnüffler"]]]},
+    {q:"Nenne einen Gegenstand, den man durch Angeln bekommen kann.",a:[["Kabeljau",10,["Cod"]],["Lachs",15,["Salmon"]],["Tropischer Fisch",35,["Tropical Fish"]],["Tintenbeutel",25,["Ink Sac"]],["Namensschild",55,["Name Tag"]],["Nautilusschale",100,["Nautilus Shell"]]]},
+    {q:"Nenne einen Block, der Licht abgibt.",a:[["Fackel",10,["Torch"]],["Glowstone",20,["Leuchtstein"]],["Seelaterne",35,["Sea Lantern"]],["Shroomlight",55,["Pilzlicht"]],["Leuchtflechte",100,["Glow Lichen"]]]},
+    {q:"Nenne eine Holzart in Minecraft.",a:[["Eiche",10,["Oak"]],["Fichte",15,["Spruce"]],["Birke",20,["Birch"]],["Akazie",30,["Acacia"]],["Mangrove",45,[]],["Kirschholz",55,["Cherry"]],["Bambus",65,["Bamboo"]],["Wirrholz",100,["Warped"]]]},
+    {q:"Nenne einen Trankeffekt.",a:[["Heilung",10,["Instant Health"]],["Feuerresistenz",20,["Fire Resistance"]],["Nachtsicht",30,["Night Vision"]],["Langsamkeit",40,["Slowness"]],["Wasseratmung",50,["Water Breathing"]],["Sprungkraft",60,["Jump Boost"]],["Glück",100,["Luck"]]]},
+    {q:"Nenne ein Erz, das unterirdisch gefunden werden kann.",a:[["Kohle",10,["Coal"]],["Eisen",10,["Iron"]],["Kupfer",20,["Copper"]],["Gold",25,[]],["Redstone",30,[]],["Lapislazuli",40,["Lapis"]],["Diamant",50,["Diamond"]],["Smaragd",100,["Emerald"]]]},
+    {q:"Nenne eine Struktur in der Oberwelt.",a:[["Dorf",10,["Village"]],["Wüstentempel",25,["Desert Temple"]],["Ozeanmonument",45,["Ocean Monument"]],["Waldanwesen",55,["Woodland Mansion"]],["Prüfungskammer",100,["Trial Chambers"]]]},
+    {q:"Nenne einen Gegenstand, mit dem man sich fortbewegen kann.",a:[["Boot",10,["Boat"]],["Loren",25,["Minecart"]],["Elytren",35,["Elytra"]],["Sattel",45,[]],["Feuerwerksrakete",100,["Firework Rocket"]]]},
+    {q:"Nenne einen feindlichen Mob aus dem Nether.",a:[["Ghast",10,[]],["Piglin",15,[]],["Magmakubus",25,["Magma Cube"]],["Wither-Skelett",30,["Wither Skeleton"]],["Hoglin",40,[]],["Zoglin",100,[]],["Piglin-Barbar",85,["Piglin Brute"]]]},
+    {q:"Nenne einen Blumen- oder Pflanzenblock.",a:[["Löwenzahn",10,["Dandelion"]],["Mohn",10,["Poppy"]],["Seerose",25,["Lily Pad"]],["Sonnenblume",35,["Sunflower"]],["Spore Blossom",60,["Sporeblüte"]],["Kannenpflanze",100,["Pitcher Plant"]]]},
+    {q:"Nenne einen Gegenstand, den man aus Diamanten herstellen kann.",a:[["Diamantschwert",10,["Diamond Sword"]],["Diamantspitzhacke",15,["Diamond Pickaxe"]],["Diamantbrustplatte",25,["Diamond Chestplate"]],["Jukebox",45,["Plattenspieler"]],["Verzauberungstisch",100,["Enchanting Table"]]]},
+    {q:"Nenne einen Dorfbewohner-Beruf.",a:[["Bauer",10,["Farmer"]],["Bibliothekar",15,["Librarian"]],["Waffenschmied",30,["Weaponsmith"]],["Kartograf",35,["Cartographer"]],["Pfeilmacher",45,["Fletcher"]],["Gerber",55,["Leatherworker"]],["Steinmetz",100,["Mason"]]]}
   ];
   const normalizeKrillionAnswer=v=>String(v).normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
   function startKrillion(){
