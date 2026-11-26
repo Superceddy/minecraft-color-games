@@ -2,7 +2,7 @@
 
 A mobile-friendly collection of Minecraft mini-games focused on average block colors.
 
-## Current prototype
+## Version 0.1.1\n\n- Fixed the Guess the Block start card by wiring it directly to the game-start function, including on mobile browsers.\n- The start action no longer depends solely on a dynamically registered click listener.\n\n## Current prototype
 
 - Main menu with game selection
 - **Guess the Block**: five rounds, color picker, RGB sliders and HEX input
