@@ -21,7 +21,18 @@ window.MC_BLOCKS_READY = (async () => {
     if (id.startsWith("wall_")) add(id.slice(5));
     if (id.startsWith("potted_")) add(id.slice(7), "flower_pot");
     const suffixes = ["_fence_gate","_pressure_plate","_trapdoor","_stairs","_slab","_fence","_button","_carpet","_pane","_wall","_sign","_banner","_bed","_head","_skull"];
-    for (const suffix of suffixes) if (id.endsWith(suffix)) add(id.slice(0, -suffix.length));
+    for (const suffix of suffixes) {
+      if (!id.endsWith(suffix)) continue;
+      const base = id.slice(0, -suffix.length);
+      add(base);
+      if (["_fence_gate","_pressure_plate","_fence","_button","_stairs","_slab"].includes(suffix)) add(base + "_planks");
+      if (suffix === "_carpet") add(base + "_wool");
+      if (suffix === "_pane") add(base + "_stained_glass", "glass");
+      if (suffix === "_bed") add(base + "_bed_foot_south");
+    }
+    for (const value of [...values]) {
+      if (value.endsWith("_brick")) add(value + "s");
+    }
     return [...new Set(values)];
   };
   try {
@@ -37,7 +48,7 @@ window.MC_BLOCKS_READY = (async () => {
         ...(previous || {}),
         id: entry.id,
         name: entry.name,
-        texture: previous?.texture || textureCandidates(path),
+        texture: [...new Set([...textureCandidates(path), ...(Array.isArray(previous?.texture) ? previous.texture : previous?.texture ? [previous.texture] : [])])],
         color: previous?.color || null,
         category: previous?.category || "Vanilla"
       };
