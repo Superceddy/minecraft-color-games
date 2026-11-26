@@ -17,3 +17,16 @@
 /* Version 0.3.0 — smoother flat texture preview and public leaderboard */
 .block-image-wrap img{image-rendering:auto;image-rendering:smooth;object-fit:contain;filter:none;width:192px;height:192px}
 #texture-error{font:10px var(--mono);letter-spacing:.3px;color:#aab7ad;text-align:center;padding:18px}
+
+/* Version 0.4.0 — Minecraft Krillion */
+.krillion-card{cursor:pointer;color:inherit;font:inherit;width:100%;display:block}
+.krillion-card:hover{transform:translateY(-4px);border-color:#82b357;box-shadow:0 12px 30px #0003}
+.krillion-art{background:radial-gradient(circle at 50% 45%,#485b3d,#17251c 70%);position:relative}
+.krillion-orbs{display:flex;align-items:center;gap:8px}.krillion-orbs i{width:29px;height:29px;border-radius:50%;background:#c9df8b;box-shadow:0 0 22px #b8e58988}
+.krillion-orbs i:nth-child(2){width:43px;height:43px;background:#a5c66d}.krillion-orbs i:nth-child(3){width:34px;height:34px;background:#6c9e64}.krillion-orbs i:nth-child(4){width:20px;height:20px;background:#e6c36f}
+.krillion-art>span{position:absolute;bottom:12px;right:13px;font:9px var(--mono);letter-spacing:1px;color:#d5e5c4}
+.krillion-question-wrap{max-width:620px}.krillion-question-wrap h2{font-size:clamp(25px,4vw,36px);line-height:1.25}.krillion-answer-input{margin:10px 0 13px}
+.krillion-feedback{margin:17px 0;padding:17px;border:1px solid var(--line);border-radius:6px;background:#121b16}.krillion-feedback strong{color:var(--green);font-size:15px}.krillion-feedback p{color:#aab7ad;font-size:12px;line-height:1.6}.krillion-feedback>b{font:22px var(--mono);color:var(--green)}
+.krillion-question-wrap .next-button{margin-top:12px}
+@media(max-width:760px){.krillion-card{display:grid;grid-template-columns:116px 1fr}.krillion-art{height:100%;min-height:140px}}
+@media(max-width:390px){.krillion-card{grid-template-columns:95px 1fr}}
