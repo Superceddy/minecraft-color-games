@@ -2,11 +2,13 @@
 
 Mobile-friendly collection of Minecraft mini-games for Minecraft Java Edition 26.3.
 
-## Version 0.6.0
+## Version 0.7.0
 
 See [GAME_CONTENT.md](GAME_CONTENT.md) for the complete block list and all 50 Krillion questions with accepted answers and rarity tiers.
 - Expanded Guess the Block to the complete 26.3 vanilla block registry (1,286 block types; individual blockstates are not separate entries).
-- Added version 26.3 texture sources, fallback texture candidates, and automatic average-color calculation from the loaded texture.
+- Added Colorle: guess a vanilla block from its average texture color in six tries.
+- Removed Minecraft Krillion.
+- Added sharp pixel-perfect texture scaling and corrected dynamic saturation/brightness slider gradients.
 - Expanded Minecraft Krillion to 50 question prompts; each round randomly selects seven.
 - Added a 20-second countdown, typo/abbreviation-tolerant answer matching, and six visible rarity tiers.
 - Removed answer spoilers after rejected or timed-out answers.
