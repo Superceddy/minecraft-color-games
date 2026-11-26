@@ -90,7 +90,7 @@
     {q:"Nenne einen Mob aus Minecraft.",a:[["Zombie",5,[]],["Skelett",5,["Skeleton"]],["Creeper",6,[]],["Enderman",7,[]],["Hexe",9,["Witch"]],["Delfin",12,["Dolphin"]],["Wächter",17,["Guardian"]],["Wärter",20,["Warden"]],["Eisbär",30,["Polar Bear"]]]},
     {q:"Nenne etwas, das man beim Angeln bekommen kann.",a:[["Kabeljau",5,["Cod"]],["Lachs",6,["Salmon"]],["Tropischer Fisch",9,["Tropical Fish"]],["Tintenbeutel",12,["Ink Sac"]],["Namensschild",17,["Name Tag"]],["Nautilusschale",20,["Nautilus Shell"]],["Sattel",30,["Saddle"]]]},
     {q:"Nenne einen Block, der Licht abgibt.",a:[["Fackel",5,["Torch"]],["Glowstone",7,["Leuchtstein"]],["Seelaterne",9,["Sea Lantern"]],["Laterne",12,["Lantern"]],["Shroomlight",17,["Pilzlicht"]],["Seelenlaterne",20,["Soul Lantern"]],["Froschlicht",30,["Froglight"]]]},
-    {q:"Nenne eine Holzart in Minecraft.",a:[["Eiche",5,["Oak"]],["Fichte",6,["Spruce"]],["Birke",7,["Birch"]],["Dschungelholz",9,["Jungle"]],["Akazie",12,["Acacia"]],["Mangrove",15,[]],["Kirche",17,["Cherry","Kirschholz"]],["Bambus",20,["Bamboo"]],["Wirrholz",30,["Warped"]]]},
+    {q:"Nenne eine Holzart in Minecraft.",a:[["Eiche",5,["Oak"]],["Fichte",6,["Spruce"]],["Birke",7,["Birch"]],["Dschungelholz",9,["Jungle"]],["Akazie",12,["Acacia"]],["Mangrove",15,[]],["Kirschholz",17,["Cherry","Kirschbaum"]],["Bambus",20,["Bamboo"]],["Wirrholz",30,["Warped"]]]},
     {q:"Nenne einen Trankeffekt.",a:[["Heilung",5,["Instant Health"]],["Feuerresistenz",7,["Fire Resistance"]],["Nachtsicht",9,["Night Vision"]],["Langsamkeit",12,["Slowness"]],["Wasseratmung",15,["Water Breathing"]],["Unsichtbarkeit",17,["Invisibility"]],["Glück",20,["Luck"]],["Schwebekraft",30,["Levitation"]]]},
     {q:"Nenne ein Erz in Minecraft.",a:[["Kohle",5,["Coal"]],["Eisen",6,["Iron"]],["Kupfer",7,["Copper"]],["Gold",9,[]],["Redstone",12,[]],["Lapislazuli",15,["Lapis"]],["Diamant",20,["Diamond"]],["Smaragd",30,["Emerald"]]]},
     {q:"Nenne eine Struktur in der Oberwelt.",a:[["Dorf",5,["Village"]],["Wüstentempel",7,["Desert Temple"]],["Schiffswrack",9,["Shipwreck"]],["Dschungeltempel",12,["Jungle Temple"]],["Ozeanmonument",15,["Ocean Monument"]],["Waldanwesen",20,["Woodland Mansion"]],["Prüfungskammer",30,["Trial Chambers"]]]},
@@ -103,11 +103,11 @@
     {q:"Nenne einen Arbeitsplatz eines Dorfbewohners.",a:[["Komposter",5,["Composter"]],["Lesepult",7,["Lectern"]],["Braustand",9,["Brewing Stand"]],["Schmiedetisch",12,["Smithing Table"]],["Kartentisch",15,["Cartography Table"]],["Schleifstein",17,["Grindstone"]],["Kessel",20,["Cauldron"]],["Fass",30,["Barrel"]]]},
     {q:"Nenne eine Farbstofffarbe.",a:[["Rot",5,["Red"]],["Blau",5,["Blue"]],["Gelb",6,["Yellow"]],["Grün",7,["Green"]],["Türkis",9,["Cyan"]],["Magenta",12,[]],["Hellgrau",17,["Light Gray"]],["Braun",20,["Brown"]]]},
     {q:"Nenne einen Redstone-Bauteil.",a:[["Redstone-Staub",5,["Redstone Dust"]],["Hebel",6,["Lever"]],["Knopf",7,["Button"]],["Druckplatte",9,["Pressure Plate"]],["Redstone-Fackel",12,["Redstone Torch"]],["Beobachter",15,["Observer"]],["Zielblock",20,["Target"]],["Kalibrierter Sculk-Sensor",30,["Calibrated Sculk Sensor"]]]},
-    {q:"Nenne ein Höhlenbiom.",a:[["Tropfsteinhöhlen",5,["Dripstone Caves"]],["Üppige Höhlen",9,["Lush Caves"]],["Dunkle Tiefen",17,["Deep Dark"]]]},
+    {q:"Nenne ein Höhlenbiom.",a:[["Tropfsteinhöhlen",5,["Dripstone Caves"]],["Üppige Höhlen",9,["Lush Caves"]],["Dunkle Tiefen",30,["Deep Dark"]]]},
     {q:"Nenne eine Kupfer-Variante.",a:[["Kupferblock",5,["Copper Block"]],["Angeschlagener Kupferblock",9,["Exposed Copper"]],["Verwitterter Kupferblock",15,["Weathered Copper"]],["Oxidierter Kupferblock",20,["Oxidized Copper"]],["Gewachster oxidierter Kupferblock",30,["Waxed Oxidized Copper"]]]},
     {q:"Nenne eine Art von Schiene.",a:[["Schiene",5,["Rail"]],["Antriebsschiene",9,["Powered Rail"]],["Sensorschiene",15,["Detector Rail"]],["Aktivierungsschiene",20,["Activator Rail"]]]},
-    {q:"Nenne einen Mob, den man zähmen kann.",a:[["Wolf",5,["Hund"]],["Katze",7,["Cat"]],["Papagei",9,["Parrot"]],["Pferd",12,["Horse"]],["Esel",15,["Donkey"]],["Maultier",17,["Mule"]],["Fuchs",20,["Fox"]],["Allay",30,["Vex?"]]]},
-    {q:"Nenne einen Boss in Minecraft.",a:[["Enderdrache",5,["Ender Dragon"]],["Wither",9,["Wither Boss"]]]},
+    {q:"Nenne einen Mob, den man zähmen kann.",a:[["Wolf",5,["Hund"]],["Katze",7,["Cat"]],["Papagei",9,["Parrot"]],["Pferd",12,["Horse"]],["Esel",15,["Donkey"]],["Maultier",17,["Mule"]],["Fuchs",20,["Fox"]],["Skelettpferd",30,["Skeleton Horse"]]]},
+    {q:"Nenne einen Boss in Minecraft.",a:[["Enderdrache",5,["Ender Dragon"]],["Wither",30,["Wither Boss"]]]},
     {q:"Nenne eine Holzart, aus der es Boote gibt.",a:[["Eiche",5,["Oak"]],["Fichte",6,["Spruce"]],["Birke",7,["Birch"]],["Dschungel",9,["Jungle"]],["Akazie",12,["Acacia"]],["Dunkleiche",15,["Dark Oak"]],["Mangrove",20,[]],["Kirschholz",30,["Cherry"]]]},
     {q:"Nenne eine Werkbank oder einen Handwerksblock.",a:[["Werkbank",5,["Crafting Table"]],["Ofen",6,["Furnace"]],["Amboss",9,["Anvil"]],["Schmelzofen",12,["Blast Furnace"]],["Räucherofen",15,["Smoker"]],["Steinsäge",17,["Stonecutter"]],["Webstuhl",20,["Loom"]],["Bücherregal",30,["Bookshelf"]]]},
     {q:"Nenne einen Block, der von Schwerkraft beeinflusst wird.",a:[["Sand",5,[]],["Kies",6,["Gravel"]],["Roter Sand",9,["Red Sand"]],["Amboss",12,["Anvil"]],["Betonpulver",15,["Concrete Powder"]],["Drachenei",20,["Dragon Egg"]],["Spitzes Tropfstein",30,["Pointed Dripstone"]]]},
@@ -135,7 +135,7 @@
   ];
   const RARITY = [{name:"Basic",min:5,max:7},{name:"Uncommon",min:8,max:11},{name:"Rare",min:12,max:15},{name:"Legendary",min:16,max:19},{name:"Mythic",min:20,max:25},{name:"One in a Minellion",min:30,max:30}];
   const rarityFor = points => RARITY.find(t=>points>=t.min&&points<=t.max)||RARITY[0];
-  const normalizeKrillionAnswer = value => String(value).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]/g,"");
+  const normalizeKrillionAnswer = value => String(value).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
   function editDistance(a,b){
     if(Math.abs(a.length-b.length)>2)return 99;
     let prev=Array.from({length:b.length+1},(_,i)=>i);
