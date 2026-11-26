@@ -40,6 +40,10 @@
             <div class="game-art color-art"><div class="pixel-block"><span></span></div><div class="art-label">RGB / HEX</div></div>
             <div class="game-info"><div class="game-title-row"><h3>Guess the Block</h3><span class="play-arrow">↗</span></div><p>Errate die durchschnittliche Farbe eines Blocks so genau wie möglich.</p><div class="game-tags"><span>FARBE RATEN</span><span>SOLO</span></div></div>
           </button>
+          <button type="button" class="game-card krillion-card" id="start-krillion">
+            <div class="game-art krillion-art"><div class="krillion-orbs"><i></i><i></i><i></i><i></i></div><span>RARE ANSWERS</span></div>
+            <div class="game-info"><div class="game-title-row"><h3>Minecraft Krillion</h3><span class="play-arrow">↗</span></div><p>Beantworte offene Minecraft-Fragen. Je seltener deine Antwort, desto mehr Punkte!</p><div class="game-tags"><span>7 FRAGEN</span><span>WISSEN</span></div></div>
+          </button>
           <div class="game-card locked">
             <div class="game-art palette-art"><div class="palette-circles"><i></i><i></i><i></i><i></i></div><span>COMING SOON</span></div>
             <div class="game-info"><div class="game-title-row"><h3>Colorle</h3><span class="lock-icon">⌑</span></div><p>Finde den Block anhand seiner Farbe – mit jedem Versuch näher.</p><div class="game-tags"><span>RÄTSEL</span><span>BALD</span></div></div>
@@ -109,8 +113,13 @@
         </div>
       </section>
 
+      <section id="krillion-screen" class="screen">
+        <div class="game-topline"><button class="back-button" id="krillion-home">← Zurück</button><div class="round-label">FRAGE <b id="krillion-round">1</b> / 7</div><div class="score-label">PUNKTE <b id="krillion-score">0</b></div></div>
+        <div class="result-wrap krillion-question-wrap"><span class="eyebrow">MINECRAFT KRILLION</span><h2 id="krillion-question">Nenne einen Block …</h2><p class="result-subtitle">Gib eine passende Antwort ein. Seltenere Antworten bringen mehr Punkte.</p><input id="krillion-answer" class="player-name-input krillion-answer-input" maxlength="40" placeholder="Deine Antwort …" autocomplete="off"><button class="submit-guess" id="krillion-submit">ANTWORT ABGEBEN →</button><div id="krillion-feedback" class="krillion-feedback" hidden><strong id="krillion-feedback-title"></strong><p id="krillion-feedback-copy"></p><b id="krillion-feedback-points"></b></div><button class="submit-guess next-button" id="krillion-next" hidden>NÄCHSTE FRAGE →</button></div>
+      </section>
+      <section id="krillion-finish-screen" class="screen"><div class="result-wrap finish-wrap"><span class="eyebrow">RUNDE BEENDET</span><h2>Krillion geschafft!</h2><p class="result-subtitle">Dein Ergebnis aus sieben Fragen.</p><div class="final-score"><strong id="krillion-final-score">0</strong><span>VON MAXIMAL 700 PUNKTEN</span></div><label class="name-label" for="krillion-player-name">DEIN NAME FÜR DIE RANGLISTE</label><input id="krillion-player-name" class="player-name-input" maxlength="18" placeholder="Minecraft-Spieler"><button class="submit-guess" id="krillion-save-score">ERGEBNIS SPEICHERN →</button><button class="text-button replay-button" id="krillion-play-again">Noch eine Runde spielen ↻</button></div></section>
       <section id="leaderboard-screen" class="screen">
-        <div class="section-heading"><div><span class="eyebrow">HALL OF FAME</span><h2>Rangliste</h2></div><button class="back-button" id="leaderboard-back">← Zurück</button></div>
+        <div class="section-heading"><div><span class="eyebrow">HALL OF FAME</span><h2 id="leaderboard-title">Rangliste</h2></div><button class="back-button" id="leaderboard-back">← Zurück</button></div>
         <div id="full-leaderboard" class="leaderboard-list full-list"></div>
         <p class="small-note" id="full-leaderboard-status" aria-live="polite">Ergebnisse werden mit der öffentlichen Rangliste synchronisiert.</p>
       </section>
