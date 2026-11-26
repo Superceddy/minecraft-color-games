@@ -7,7 +7,37 @@
     "https://fjonruqyptpoxtwztgnx.supabase.co",
     "sb_publishable_ZOD_FFJkzyOOUSrW0w6CTg_DsRmBvHL"
   );
-  const textureUrls = (texture) => [`https://raw.githubusercontent.com/Faithful-Pack/Default-Java/1.21.1/assets/minecraft/textures/block/${texture}.png`,`https://mcasset.cloud/1.21.1/assets/minecraft/textures/block/${texture}.png`];
+  const textureUrls = (texture) => {
+    const names = Array.isArray(texture) ? texture : [texture];
+    const urls = [];
+    for (const name of names) {
+      if (!name) continue;
+      urls.push(`https://mcasset.cloud/26.3/assets/minecraft/textures/block/${name}.png`);
+      urls.push(`https://mcasset.cloud/26.3/assets/minecraft/textures/item/${name}.png`);
+      urls.push(`https://mcasset.cloud/26.2/assets/minecraft/textures/block/${name}.png`);
+      urls.push(`https://raw.githubusercontent.com/Faithful-Pack/Default-Java/1.21.1/assets/minecraft/textures/block/${name}.png`);
+    }
+    return [...new Set(urls)];
+  };
+  function averageTextureColor(img) {
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 32; canvas.height = 32;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, 32, 32);
+      const pixels = ctx.getImageData(0, 0, 32, 32).data;
+      let r = 0, g = 0, b = 0, weight = 0;
+      for (let i = 0; i < pixels.length; i += 4) {
+        const alpha = pixels[i + 3] / 255;
+        if (alpha < 0.05) continue;
+        r += pixels[i] * alpha; g += pixels[i + 1] * alpha; b += pixels[i + 2] * alpha;
+        weight += alpha;
+      }
+      return weight ? rgbToHex([r / weight, g / weight, b / weight]) : null;
+    } catch (error) {
+      return null;
+    }
+  }
   const hexToRgb = (hex) => { const clean=hex.replace("#",""); return [0,2,4].map(i=>parseInt(clean.slice(i,i+2),16)); };
   const rgbToHex = (rgb) => "#"+rgb.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("").toUpperCase();
   const colorDistance = (a,b) => Math.sqrt(a.reduce((sum,v,i)=>sum+(v-b[i])**2,0));
@@ -39,14 +69,33 @@
     $("brightness-range").style.setProperty("--track",`linear-gradient(90deg,#000,#${hsvToHex(h,s,100).slice(1)})`);
   }
   function updateFromSliders(){setGuess(hsvToHex(Number($("hue-range").value),Number($("saturation-range").value),Number($("brightness-range").value)));}
-  function startGame(){state.round=0;state.score=0;state.rounds=[];state.used=[];$("live-score").textContent="0";nextRound();}
+  async function startGame(){
+    const startButton = $("start-guess");
+    if (startButton) startButton.disabled = true;
+    if (window.MC_BLOCKS_READY) await window.MC_BLOCKS_READY;
+    if (startButton) startButton.disabled = false;
+    state.round=0;state.score=0;state.rounds=[];state.used=[];$("live-score").textContent="0";nextRound();
+  }
   function nextRound(){
     if(state.round>=5){finishGame();return;}
     state.current=randomBlock();$("round-number").textContent=state.round+1;$("block-name").textContent=state.current.name;$("block-id").textContent=state.current.id;
-    const img=$("block-image"),error=$("texture-error");
-    img.onerror=()=>{img.hidden=true;error.hidden=false;};
-    img.onload=()=>{img.hidden=false;error.hidden=true;};
-    img.hidden=false;error.hidden=true;const urls=textureUrls(state.current.texture);let sourceIndex=0;img.onerror=()=>{sourceIndex++;if(sourceIndex<urls.length){img.src=urls[sourceIndex];}else{img.hidden=true;error.hidden=false;}};img.onload=()=>{img.hidden=false;error.hidden=true;};img.src=urls[0];
+    const img=$("block-image"),error=$("texture-error"),submit=$("submit-guess");
+    const urls=textureUrls(state.current.texture);let sourceIndex=0;
+    submit.disabled=true;
+    img.crossOrigin="anonymous";
+    img.hidden=false;error.hidden=true;
+    img.onerror=()=>{
+      sourceIndex++;
+      if(sourceIndex<urls.length){img.src=urls[sourceIndex];}
+      else{img.hidden=true;error.hidden=false;submit.disabled=false;}
+    };
+    img.onload=()=>{
+      img.hidden=false;error.hidden=true;
+      const measured=averageTextureColor(img);
+      if(measured) state.current.color=measured;
+      submit.disabled=false;
+    };
+    if(urls.length){img.src=urls[0];}else{img.hidden=true;error.hidden=false;submit.disabled=false;}
     setGuess("#6B8E23");showScreen("game-screen");
   }
   function submitGuess(){const actual=hexToRgb(state.current.color),guess=hexToRgb(state.guess),distance=colorDistance(actual,guess),earned=scoreFor(distance);state.rounds.push({block:state.current.name,guess:state.guess,actual:state.current.color,earned,distance:Math.round(distance)});state.score+=earned;state.round++;$("live-score").textContent=state.score;$("your-result-swatch").style.background=state.guess;$("real-result-swatch").style.background=state.current.color;$("your-result-hex").textContent=state.guess;$("real-result-hex").textContent=state.current.color.toUpperCase();$("round-earned").textContent=earned.toLocaleString("de-DE");$("distance-value").textContent="Δ "+Math.round(distance);$("result-title").textContent=earned>900?"Perfekt getroffen!":earned>700?"Sehr nah dran!":earned>400?"Guter Versuch!":"Das geht noch genauer!";$("result-subtitle").textContent="Die Durchschnittsfarbe von "+state.current.name+" war "+state.current.color.toUpperCase()+"."; $("next-round").innerHTML=state.round>=5?'ERGEBNIS ANSEHEN <span>→</span>':'NÄCHSTE RUNDE <span>→</span>';showScreen("result-screen");}
