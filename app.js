@@ -1,7 +1,7 @@
 (() => {
   const $ = (id) => document.getElementById(id);
-  const screens = ["home-screen","game-screen","result-screen","finish-screen","leaderboard-screen"];
-  const state = {round:0,score:0,rounds:[],current:null,guess:"#6B8E23",used:[]};
+  const screens = ["home-screen","game-screen","result-screen","finish-screen","krillion-screen","krillion-finish-screen","leaderboard-screen"];
+  const state = {round:0,score:0,rounds:[],current:null,guess:"#6B8E23",used:[],krillionRound:0,krillionScore:0,krillionQuestions:[],krillionCurrent:null};
   const MAX_DISTANCE = Math.sqrt(3 * 255 * 255);
   const supabaseClient = window.supabase?.createClient(
     "https://fjonruqyptpoxtwztgnx.supabase.co",
@@ -57,10 +57,10 @@
     const el=$(target);if(!scores.length){el.innerHTML='<div class="empty-leaderboard">Noch keine Ergebnisse gespeichert. Starte das erste Spiel!</div>';return;}
     el.innerHTML=scores.map((s,i)=>'<div class="leader-row"><div class="leader-rank">#'+(i+1)+'</div><div><div class="leader-name">'+escapeHtml(s.player_name||s.name||"Spieler")+'</div><div class="leader-date">'+new Date(s.created_at||s.date).toLocaleDateString("de-DE")+'</div></div><div class="leader-score">'+Number(s.score).toLocaleString("de-DE")+' P</div></div>').join("");
   }
-  async function renderLeaderboard(target){
+  async function renderLeaderboard(target,mode="guess_block"){
     const status=$(target==="full-leaderboard"?"full-leaderboard-status":"leaderboard-status");
     if(supabaseClient){
-      const {data,error}=await supabaseClient.from("leaderboard").select("player_name,score,created_at").eq("game_mode","guess_block").order("score",{ascending:false}).order("created_at",{ascending:true}).limit(10);
+      const {data,error}=await supabaseClient.from("leaderboard").select("player_name,score,created_at").eq("game_mode",mode).order("score",{ascending:false}).order("created_at",{ascending:true}).limit(10);
       if(!error){drawLeaderboard(target,data||[]);if(status)status.textContent="LIVE · Öffentliche Rangliste für alle Spieler";return;}
       if(status)status.textContent="Online-Rangliste gerade nicht erreichbar – lokale Ergebnisse werden angezeigt.";
     }else if(status){status.textContent="Online-Verbindung nicht verfügbar – lokale Ergebnisse werden angezeigt.";}
@@ -80,8 +80,49 @@
     if(!saved){const s=$("full-leaderboard-status");if(s)s.textContent="Ergebnis lokal gespeichert; Online-Speicherung hat nicht funktioniert.";}
     showScreen("leaderboard-screen");
   }
+
+  const KRILLION_QUESTIONS=[
+    {q:"Nenne einen Nether-Biom.",a:[["Nether-Ödland",10,["Nether Wastes","Netherwüste"]],["Karmesinwald",25,["Crimson Forest"]],["Seelensandtal",35,["Soul Sand Valley"]],["Wirrwald",45,["Warped Forest"]],["Basaltdeltas",55,["Basalt Deltas"]]]},
+    {q:"Nenne einen Block, der natürlich im End vorkommt.",a:[["Endstein",10,["End Stone"]],["Obsidian",25,[]],["Purpurblock",45,["Purpur"]],["Chorusblüte",70,["Chorus Flower"]],["Drachenei",100,["Dragon Egg"]]]},
+    {q:"Nenne einen passiven Mob.",a:[["Kuh",10,["Cow"]],["Schaf",10,["Sheep"]],["Axolotl",45,[]],["Mooshroom",65,["Pilzkuh"]],["Sniffer",85,["Schnüffler"]]]},
+    {q:"Nenne einen Gegenstand, den man durch Angeln bekommen kann.",a:[["Kabeljau",10,["Cod"]],["Lachs",15,["Salmon"]],["Tropischer Fisch",35,["Tropical Fish"]],["Tintenbeutel",25,["Ink Sac"]],["Namensschild",55,["Name Tag"]],["Sattel",70,[]]]},
+    {q:"Nenne einen Block, der Licht abgibt.",a:[["Fackel",10,["Torch"]],["Glowstone",20,["Leuchtstein"]],["Seelaterne",35,["Sea Lantern"]],["Shroomlight",55,["Pilzlicht"]],["Leuchtflechte",70,["Glow Lichen"]]]},
+    {q:"Nenne eine Holzart in Minecraft.",a:[["Eiche",10,["Oak"]],["Fichte",15,["Spruce"]],["Birke",20,["Birch"]],["Akazie",30,["Acacia"]],["Mangrove",45,[]],["Kirschholz",55,["Cherry"]],["Bambus",65,["Bamboo"]],["Wirrholz",80,["Warped"]]]},
+    {q:"Nenne einen Trankeffekt.",a:[["Heilung",10,["Instant Health"]],["Feuerresistenz",20,["Fire Resistance"]],["Nachtsicht",30,["Night Vision"]],["Langsamkeit",40,["Slowness"]],["Wasseratmung",50,["Water Breathing"]],["Sprungkraft",60,["Jump Boost"]],["Glück",90,["Luck"]]]},
+    {q:"Nenne ein Erz, das unterirdisch gefunden werden kann.",a:[["Kohle",10,["Coal"]],["Eisen",10,["Iron"]],["Kupfer",20,["Copper"]],["Gold",25,[]],["Redstone",30,[]],["Lapislazuli",40,["Lapis"]],["Diamant",50,["Diamond"]],["Smaragd",70,["Emerald"]]]},
+    {q:"Nenne eine Struktur in der Oberwelt.",a:[["Dorf",10,["Village"]],["Wüstentempel",25,["Desert Temple"]],["Ozeanmonument",45,["Ocean Monument"]],["Waldanwesen",55,["Woodland Mansion"]],["Prüfungskammer",80,["Trial Chambers"]]]},
+    {q:"Nenne einen Gegenstand, mit dem man sich fortbewegen kann.",a:[["Boot",10,["Boat"]],["Loren",25,["Minecart"]],["Elytren",35,["Elytra"]],["Sattel",45,[]],["Feuerwerksrakete",65,["Firework Rocket"]]]},
+    {q:"Nenne einen feindlichen Mob aus dem Nether.",a:[["Ghast",10,[]],["Piglin",15,[]],["Magmakubus",25,["Magma Cube"]],["Wither-Skelett",30,["Wither Skeleton"]],["Hoglin",40,[]],["Zoglin",65,[]],["Piglin-Barbar",85,["Piglin Brute"]]]},
+    {q:"Nenne einen Blumen- oder Pflanzenblock.",a:[["Löwenzahn",10,["Dandelion"]],["Mohn",10,["Poppy"]],["Seerose",25,["Lily Pad"]],["Sonnenblume",35,["Sunflower"]],["Spore Blossom",60,["Sporeblüte"]],["Kannenpflanze",85,["Pitcher Plant"]]]},
+    {q:"Nenne einen Gegenstand, den man aus Diamanten herstellen kann.",a:[["Diamantschwert",10,["Diamond Sword"]],["Diamantspitzhacke",15,["Diamond Pickaxe"]],["Diamantbrustplatte",25,["Diamond Chestplate"]],["Jukebox",45,["Plattenspieler"]],["Verzauberungstisch",55,["Enchanting Table"]]]},
+    {q:"Nenne einen Dorfbewohner-Beruf.",a:[["Bauer",10,["Farmer"]],["Bibliothekar",15,["Librarian"]],["Waffenschmied",30,["Weaponsmith"]],["Kartograf",35,["Cartographer"]],["Pfeilmacher",45,["Fletcher"]],["Gerber",55,["Leatherworker"]],["Steinmetz",65,["Mason"]]]}
+  ];
+  const normalizeKrillionAnswer=v=>String(v).normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  function startKrillion(){
+    const pool=[...KRILLION_QUESTIONS];for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    state.krillionQuestions=pool.slice(0,7);state.krillionRound=0;state.krillionScore=0;showKrillionQuestion();
+  }
+  function showKrillionQuestion(){
+    if(state.krillionRound>=7){$("krillion-final-score").textContent=state.krillionScore;showScreen("krillion-finish-screen");return;}
+    state.krillionCurrent=state.krillionQuestions[state.krillionRound];$("krillion-round").textContent=state.krillionRound+1;$("krillion-score").textContent=state.krillionScore;$("krillion-question").textContent=state.krillionCurrent.q;$("krillion-answer").value="";$("krillion-answer").disabled=false;$("krillion-feedback").hidden=true;$("krillion-submit").hidden=false;$("krillion-next").hidden=true;showScreen("krillion-screen");
+  }
+  function submitKrillionAnswer(){
+    const raw=$("krillion-answer").value.trim();if(!raw){$("krillion-answer").focus();return;}
+    const key=normalizeKrillionAnswer(raw);const match=state.krillionCurrent.a.find(([label,points,aliases])=>[label,...aliases].some(alias=>normalizeKrillionAnswer(alias)===key));
+    const earned=match?match[1]:0;state.krillionScore+=earned;state.krillionRound++;$("krillion-score").textContent=state.krillionScore;$("krillion-answer").disabled=true;$("krillion-submit").hidden=true;$("krillion-feedback").hidden=false;
+    $("krillion-feedback-title").textContent=match?(earned>=70?"Seltene Antwort!":earned>=40?"Gute Antwort!":"Antwort erkannt!"):"Nicht in der Antwortliste";
+    $("krillion-feedback-copy").textContent=match?match[0]+" · "+earned+" Punkte":"0 Punkte. Eine mögliche Antwort: "+[...state.krillionCurrent.a].sort((a,b)=>b[1]-a[1])[0][0]+".";
+    $("krillion-feedback-points").textContent="+"+earned;$("krillion-next").hidden=false;$("krillion-next").textContent=state.krillionRound>=7?"ERGEBNIS ANSEHEN →":"NÄCHSTE FRAGE →";
+  }
+  async function saveKrillionScore(){
+    const name=$("krillion-player-name").value.trim().slice(0,18)||"Spieler";$("krillion-save-score").disabled=true;$("krillion-save-score").textContent="WIRD GESPEICHERT …";
+    let saved=false;if(supabaseClient){const {error}=await supabaseClient.from("leaderboard").insert({player_name:name,score:state.krillionScore,game_mode:"minecraft_krillion"});saved=!error;}
+    $("krillion-save-score").disabled=false;$("krillion-save-score").textContent="ERGEBNIS SPEICHERN →";
+    await renderLeaderboard("full-leaderboard","minecraft_krillion");$("leaderboard-title").textContent="Minecraft Krillion · Rangliste";$("full-leaderboard-status").textContent=saved?"LIVE · Öffentliche Krillion-Rangliste":"Online-Speicherung nicht verfügbar – bitte später erneut versuchen.";showScreen("leaderboard-screen");
+  }
+
   window.startGuessGame=startGame;
-  $("back-home").addEventListener("click",()=>showScreen("home-screen"));$("submit-guess").addEventListener("click",submitGuess);$("next-round").addEventListener("click",nextRound);$("save-score").addEventListener("click",saveScore);$("play-again").addEventListener("click",startGame);$("show-leaderboard").addEventListener("click",()=>{renderLeaderboard("full-leaderboard");showScreen("leaderboard-screen");});$("leaderboard-back").addEventListener("click",()=>showScreen("home-screen"));
+  $("back-home").addEventListener("click",()=>showScreen("home-screen"));$("submit-guess").addEventListener("click",submitGuess);$("next-round").addEventListener("click",nextRound);$("save-score").addEventListener("click",saveScore);$("play-again").addEventListener("click",startGame);$("show-leaderboard").addEventListener("click",()=>{renderLeaderboard("full-leaderboard");showScreen("leaderboard-screen");});$("leaderboard-back").addEventListener("click",()=>showScreen("home-screen"));$("start-krillion").addEventListener("click",startKrillion);$("krillion-home").addEventListener("click",()=>showScreen("home-screen"));$("krillion-submit").addEventListener("click",submitKrillionAnswer);$("krillion-answer").addEventListener("keydown",e=>{if(e.key==="Enter")submitKrillionAnswer();});$("krillion-next").addEventListener("click",showKrillionQuestion);$("krillion-save-score").addEventListener("click",saveKrillionScore);$("krillion-play-again").addEventListener("click",startKrillion);
   ["hue-range","saturation-range","brightness-range"].forEach(id=>$(id).addEventListener("input",updateFromSliders));
   $("hex-input").addEventListener("input",e=>{const value=e.target.value.replace(/[^0-9a-f]/gi,"").slice(0,6);e.target.value=value;if(value.length===6)setGuess("#"+value);});
   $("copy-hex").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(state.guess);$("copy-hex").textContent="OK";setTimeout(()=>$("copy-hex").textContent="COPY",900);}catch{$("hex-input").select();}});
