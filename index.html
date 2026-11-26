@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17251e">
+  <meta name="description" content="Minecraft Color Games – rate die durchschnittliche Farbe von Minecraft-Blöcken.">
+  <title>Minecraft Color Games</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Minecraft Color Games Startseite">
+        <span class="brand-cube"><i></i><i></i><i></i></span>
+        <span>MINECRAFT <b>COLOR GAMES</b></span>
+      </a>
+      <div class="top-meta"><span class="online-dot"></span><span>JAVA EDITION</span><span class="version">1.21.1</span></div>
+    </header>
+
+    <main>
+      <section id="home-screen" class="screen active">
+        <div class="hero">
+          <div class="eyebrow"><span class="eyebrow-line"></span> THE BLOCK COLOR CHALLENGE</div>
+          <h1>Wie gut kennst du<br><em>Minecraft-Farben?</em></h1>
+          <p class="hero-copy">Schätze die durchschnittliche Farbe von Minecraft-Blöcken. Je näher du dran bist, desto mehr Punkte bekommst du.</p>
+          <div class="hero-stats">
+            <div><strong>RGB</strong><span>Präzise raten</span></div>
+            <div><strong>10</strong><span>Plätze in der Rangliste</span></div>
+            <div><strong>1.21.1</strong><span>Java Edition</span></div>
+          </div>
+        </div>
+
+        <div class="section-heading"><div><span class="eyebrow">SPIELMODI</span><h2>Wähle dein Spiel</h2></div><span class="soon-tag">MEHR SPIELE FOLGEN</span></div>
+        <div class="game-grid">
+          <button class="game-card featured" id="start-guess">
+            <div class="game-art color-art"><div class="pixel-block"><span></span></div><div class="art-label">RGB / HEX</div></div>
+            <div class="game-info"><div class="game-title-row"><h3>Guess the Block</h3><span class="play-arrow">↗</span></div><p>Errate die durchschnittliche Farbe eines Blocks so genau wie möglich.</p><div class="game-tags"><span>FARBE RATEN</span><span>SOLO</span></div></div>
+          </button>
+          <div class="game-card locked">
+            <div class="game-art palette-art"><div class="palette-circles"><i></i><i></i><i></i><i></i></div><span>COMING SOON</span></div>
+            <div class="game-info"><div class="game-title-row"><h3>Colorle</h3><span class="lock-icon">⌑</span></div><p>Finde den Block anhand seiner Farbe – mit jedem Versuch näher.</p><div class="game-tags"><span>RÄTSEL</span><span>BALD</span></div></div>
+          </div>
+          <div class="game-card locked">
+            <div class="game-art compare-art"><div class="compare-swatch"></div><div class="compare-swatch"></div><span>COMING SOON</span></div>
+            <div class="game-info"><div class="game-title-row"><h3>Which is darker?</h3><span class="lock-icon">⌑</span></div><p>Vergleiche zwei Blöcke und entscheide, welcher dunkler ist.</p><div class="game-tags"><span>VERGLEICH</span><span>BALD</span></div></div>
+          </div>
+        </div>
+        <section class="leaderboard-preview">
+          <div class="section-heading"><div><span class="eyebrow">HALL OF FAME</span><h2>Lokale Rangliste</h2></div><button class="text-button" id="show-leaderboard">Alle Ergebnisse ↗</button></div>
+          <div id="home-leaderboard" class="leaderboard-list"></div>
+          <p class="small-note">Die Rangliste wird aktuell auf diesem Gerät gespeichert. Eine gemeinsame Online-Rangliste kommt mit dem Backend.</p>
+        </section>
+      </section>
+
+      <section id="game-screen" class="screen">
+        <div class="game-topline"><button class="back-button" id="back-home">← Zurück</button><div class="round-label">RUNDE <b id="round-number">1</b> <span>/ 5</span></div><div class="score-label">PUNKTE <b id="live-score">0</b></div></div>
+        <div class="play-layout">
+          <section class="challenge-panel">
+            <div class="challenge-heading"><span class="eyebrow">DEINE AUFGABE</span><h2>Wie sieht dieser Block<br>im <em>Durchschnitt</em> aus?</h2></div>
+            <div class="block-display">
+              <div class="block-image-wrap"><img id="block-image" alt="Minecraft-Blocktextur"><span class="image-corner">1.21.1</span></div>
+              <div class="block-caption"><span>GESUCHTER BLOCK</span><strong id="block-name">Stone</strong><small id="block-id">minecraft:stone</small></div>
+            </div>
+            <div class="hint-line"><span class="hint-icon">i</span> Schätze die gemittelte Farbe der sichtbaren Textur. Beleuchtung und Schatten zählen nicht mit.</div>
+          </section>
+          <section class="answer-panel">
+            <div class="answer-head"><div><span class="eyebrow">DEIN TIPP</span><h3>Wähle eine Farbe</h3></div><div class="round-points"><b>1000</b><span>MAX. PUNKTE</span></div></div>
+            <div class="color-preview-wrap"><div id="color-preview" class="color-preview"></div><div class="preview-meta"><span>DEINE FARBE</span><strong id="preview-hex">#6B8E23</strong></div></div>
+            <div class="picker-row"><label for="color-picker">FARBAUSWAHL</label><input id="color-picker" type="color" value="#6b8e23" aria-label="Farbe auswählen"></div>
+            <div class="rgb-controls">
+              <div class="control-title"><label>RGB-WERTE</label><span id="rgb-readout">107, 142, 35</span></div>
+              <div class="slider-line"><label for="red-range">R</label><input id="red-range" type="range" min="0" max="255" value="107"><output id="red-value">107</output></div>
+              <div class="slider-line"><label for="green-range">G</label><input id="green-range" type="range" min="0" max="255" value="142"><output id="green-value">142</output></div>
+              <div class="slider-line"><label for="blue-range">B</label><input id="blue-range" type="range" min="0" max="255" value="35"><output id="blue-value">35</output></div>
+            </div>
+            <div class="hex-control"><label for="hex-input">HEX-CODE</label><div class="hex-input-wrap"><span>#</span><input id="hex-input" maxlength="6" value="6B8E23" spellcheck="false"><button id="copy-hex" type="button" title="HEX kopieren">COPY</button></div></div>
+            <button class="submit-guess" id="submit-guess">FARBE ABGEBEN <span>→</span></button>
+            <p class="submit-note">Du kannst deine Farbe bis zur Abgabe beliebig anpassen.</p>
+          </section>
+        </div>
+      </section>
+
+      <section id="result-screen" class="screen">
+        <div class="result-wrap">
+          <span class="eyebrow">RUNDE AUSGEWERTET</span><h2 id="result-title">Knapp daneben!</h2>
+          <p class="result-subtitle" id="result-subtitle">So nah lagst du an der echten Durchschnittsfarbe.</p>
+          <div class="color-comparison">
+            <div><div id="your-result-swatch" class="result-swatch"></div><span>DEIN TIPP</span><b id="your-result-hex">#6B8E23</b></div>
+            <div class="versus">VS</div>
+            <div><div id="real-result-swatch" class="result-swatch"></div><span>ECHTE FARBE</span><b id="real-result-hex">#777777</b></div>
+          </div>
+          <div class="result-score"><strong id="round-earned">742</strong><span>PUNKTE IN DIESER RUNDE</span></div>
+          <div class="distance-row"><span>FARBABSTAND</span><b id="distance-value">Δ 64</b></div>
+          <button class="submit-guess next-button" id="next-round">WEITER <span>→</span></button>
+        </div>
+      </section>
+
+      <section id="finish-screen" class="screen">
+        <div class="result-wrap finish-wrap">
+          <span class="eyebrow">CHALLENGE BEENDET</span><h2>Gut gespielt.</h2><p class="result-subtitle">Das ist dein Ergebnis für diese Runde.</p>
+          <div class="final-score"><strong id="final-score">0</strong><span>GESAMTPUNKTE</span></div>
+          <label class="name-label" for="player-name">DEIN NAME FÜR DIE RANGLISTE</label>
+          <input id="player-name" class="player-name-input" maxlength="18" placeholder="Minecraft-Spieler" value="">
+          <button class="submit-guess" id="save-score">ERGEBNIS SPEICHERN <span>→</span></button>
+          <button class="text-button replay-button" id="play-again">Noch eine Runde spielen ↻</button>
+        </div>
+      </section>
+
+      <section id="leaderboard-screen" class="screen">
+        <div class="section-heading"><div><span class="eyebrow">HALL OF FAME</span><h2>Rangliste</h2></div><button class="back-button" id="leaderboard-back">← Zurück</button></div>
+        <div id="full-leaderboard" class="leaderboard-list full-list"></div>
+        <p class="small-note">Diese Rangliste ist derzeit lokal auf deinem Gerät. Online-Ranglisten mit anderen Spielern werden später ergänzt.</p>
+      </section>
+    </main>
+    <footer><span>MINECRAFT COLOR GAMES</span><span>FAN PROJECT · NOT AN OFFICIAL MINECRAFT PRODUCT</span></footer>
+  </div>
+  <script src="blocks.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
