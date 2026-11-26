@@ -50,9 +50,9 @@
           </div>
         </div>
         <section class="leaderboard-preview">
-          <div class="section-heading"><div><span class="eyebrow">HALL OF FAME</span><h2>Lokale Rangliste</h2></div><button class="text-button" id="show-leaderboard">Alle Ergebnisse ↗</button></div>
+          <div class="section-heading"><div><span class="eyebrow">HALL OF FAME</span><h2>Öffentliche Rangliste</h2></div><button class="text-button" id="show-leaderboard">Alle Ergebnisse ↗</button></div>
           <div id="home-leaderboard" class="leaderboard-list"></div>
-          <p class="small-note">Die Rangliste wird aktuell auf diesem Gerät gespeichert. Eine gemeinsame Online-Rangliste kommt mit dem Backend.</p>
+          <p class="small-note" id="leaderboard-status" aria-live="polite">Öffentliche Online-Rangliste wird geladen …</p>
         </section>
       </section>
 
@@ -62,7 +62,7 @@
           <section class="challenge-panel">
             <div class="challenge-heading"><span class="eyebrow">DEINE AUFGABE</span><h2>Wie sieht dieser Block<br>im <em>Durchschnitt</em> aus?</h2></div>
             <div class="block-display">
-              <div class="block-image-wrap"><img id="block-image" alt="Minecraft-Blocktextur"><span class="image-corner">1.21.1</span></div>
+              <div class="block-image-wrap"><img id="block-image" alt="Flache Minecraft-Blocktextur"><span id="texture-error" hidden>Textur konnte nicht geladen werden</span><span class="image-corner">1.21.1</span></div>
               <div class="block-caption"><span>GESUCHTER BLOCK</span><strong id="block-name">Stone</strong><small id="block-id">minecraft:stone</small></div>
             </div>
             <div class="hint-line"><span class="hint-icon">i</span> Schätze die gemittelte Farbe der sichtbaren Textur. Beleuchtung und Schatten zählen nicht mit.</div>
@@ -112,11 +112,12 @@
       <section id="leaderboard-screen" class="screen">
         <div class="section-heading"><div><span class="eyebrow">HALL OF FAME</span><h2>Rangliste</h2></div><button class="back-button" id="leaderboard-back">← Zurück</button></div>
         <div id="full-leaderboard" class="leaderboard-list full-list"></div>
-        <p class="small-note">Diese Rangliste ist derzeit lokal auf deinem Gerät. Online-Ranglisten mit anderen Spielern werden später ergänzt.</p>
+        <p class="small-note" id="full-leaderboard-status" aria-live="polite">Ergebnisse werden mit der öffentlichen Rangliste synchronisiert.</p>
       </section>
     </main>
     <footer><span>MINECRAFT COLOR GAMES</span><span>FAN PROJECT · NOT AN OFFICIAL MINECRAFT PRODUCT</span></footer>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <script src="blocks.js"></script>
   <script src="app.js"></script>
 </body>
